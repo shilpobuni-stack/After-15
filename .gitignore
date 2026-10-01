@@ -1,0 +1,31 @@
+# Dependencies and build output
+node_modules
+.next
+out
+dist
+dist-ssr
+.vercel
+
+# Local environment files: deployment secrets must only be configured in Vercel
+.env
+.env.*
+!.env.example
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Editor files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vite-source-tags.js
