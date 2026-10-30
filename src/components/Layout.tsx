@@ -345,7 +345,21 @@ const { settings, cart, wishlist, setPanel, categories, products, panel } = useS
           <span>ট্র্যাক</span>
         </button>
       </nav>
-
+{bagCount > 0 && panel !== 'cart' && (
+  <button
+    key={bagCount}
+    type="button"
+    className="floating-bag"
+    onClick={() => setPanel('cart')}
+    aria-label={`ব্যাগ খুলুন, ${bagCount}টি পণ্য`}
+  >
+    <ShoppingBag size={22} />
+    <span className="floating-bag-text">
+      ব্যাগ · {fmt(bagCount)}টি
+      <small>{money(bagTotal)}</small>
+    </span>
+  </button>
+)}
       <button
         type="button"
         className="floating-faq"
