@@ -48,3 +48,21 @@ body:has(.floating-bag) .help-dial{bottom:calc(92px + env(safe-area-inset-bottom
   .category-slider{padding:0 22% 6px;scroll-padding-inline:22%}
   .category-slider .category-card{flex-basis:56%}
 }
+/* ২. পণ্য/শেড বাছাইয়ের উইন্ডো খোলা থাকলে ব্যাগ ডান-ওপরে ছোট বাটন হয়ে থাকবে */
+body:has(.modal-backdrop:not(.drawer-backdrop)) .floating-bag{z-index:120;top:calc(10px + env(safe-area-inset-top,0px));bottom:auto;right:12px;padding:6px}
+body:has(.modal-backdrop:not(.drawer-backdrop)) .floating-bag-text,
+body:has(.modal-backdrop:not(.drawer-backdrop)) .fb-go{display:none}
+body:has(.modal-backdrop:not(.drawer-backdrop)) .help-dial{display:none}
+body:has(.modal-backdrop:not(.drawer-backdrop)):has(.floating-bag) .modal-backdrop:not(.drawer-backdrop){align-items:flex-end;padding-top:74px}
+body:has(.modal-backdrop:not(.drawer-backdrop)):has(.floating-bag) .modal{max-height:calc(100dvh - 90px)}
+body:has(.drawer-backdrop) .floating-bag,
+body:has(.drawer-backdrop) .help-dial{display:none}
+
+/* ৩. মেনু স্ক্রল করলে পেছনের পাতা নড়বে না */
+html:has(.modal-backdrop),body:has(.modal-backdrop){overflow:hidden}
+.modal,.drawer,.category-menu,.nav-shell.mobile-open,.admin-sidebar{overscroll-behavior:contain}
+.category-menu{max-height:min(65dvh,480px);overflow-y:auto}
+.nav-shell.mobile-open{max-height:calc(100dvh - 90px);overflow-y:auto}
+
+/* ৪. অ্যাডমিনের বাঁ পাশের মেনু স্ক্রল হবে */
+.admin-sidebar{overflow-y:auto;-webkit-overflow-scrolling:touch}
