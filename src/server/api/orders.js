@@ -252,6 +252,7 @@ export default async function handler(req, res) {
       };
       const { data, error } = await supabase.from('orders').insert(order).select().single();
       if (error) {
+                await restoreStock();
         if (String(error.message || '').includes('duplicate') && requestId) {
           const { data: again, error: againError } = await supabase.from('orders').select('*').eq('request_id', requestId).maybeSingle();
           if (againError) throw againError;
