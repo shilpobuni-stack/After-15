@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
@@ -39,6 +39,21 @@ export function Layout() {
   (a, c) => a + (products.find((p) => p.id === c.productId)?.price ?? 0) * c.quantity,
   0
 );
+    const [dialOpen, setDialOpen] = useState(false);
+  const [bagNudge, setBagNudge] = useState(false);
+  const hasBag = bagCount > 0;
+  useEffect(() => {
+    if (!hasBag) return;
+    const t = setInterval(() => {
+      setBagNudge(true);
+      setTimeout(() => setBagNudge(false), 1600);
+    }, 30000);
+    return () => clearInterval(t);
+  }, [hasBag]);
+  const fbUrl = settings.facebookUrl || '';
+  const fbId = fbUrl.match(/[?&]id=(\d+)/)?.[1];
+  const fbName = fbUrl.replace(/[?#].*$/, '').replace(/\/+$/, '').split('/').pop();
+  const messengerUrl = fbUrl ? `https://m.me/${fbId || fbName}` : '';
   const shadeCount = new Set(
     products.filter((p) => p.active && p.variantLabel !== 'সাইজ').flatMap((p) => p.shades.map((s) => s.code))
   ).size;
