@@ -28,35 +28,37 @@ const loop = moving ? [...categories, ...categories] : categories;
 
   return (
     <>
-      <section className="hero">
+            <section className="hero">
         <div className="container hero-inner">
           <div className="hero-copy">
-            <div className="eyebrow">
-              <span /> {settings.heroEyebrow}
-            </div>
-            <h1>
-              {settings.heroTitle}
-              <br />
-              <em>
-                {settings.heroAccent}
-                <svg viewBox="0 0 420 15" fill="none" aria-hidden="true">
-                  <path
-                    d="M2 9c92-10 273-9 414-3M30 14c121-10 251-8 360-5"
-                    stroke="currentColor"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </em>
-            </h1>
-            <p>{settings.heroDescription}</p>
-            <div className="hero-buttons">
-              <Link className="button primary" to="/shop">
-                {settings.heroButtonText} <ArrowRight size={18} />
-              </Link>
-              <Link className="button secondary" to="/shades">
-                <Palette size={18} /> শেড কালেকশন
-              </Link>
+            <div key={`s${slideIndex}`} className="hero-slide-in">
+              <div className="eyebrow">
+                <span /> {slide.eyebrow}
+              </div>
+              <h1>
+                {slide.title}
+                <br />
+                <em>
+                  {slide.accent}
+                  <svg viewBox="0 0 420 15" fill="none" aria-hidden="true">
+                    <path
+                      d="M2 9c92-10 273-9 414-3M30 14c121-10 251-8 360-5"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </em>
+              </h1>
+              <p>{slide.description}</p>
+              <div className="hero-buttons">
+                <Link className="button primary" to={slide.link}>
+                  {slide.button} <ArrowRight size={18} />
+                </Link>
+                <Link className="button secondary" to="/shades">
+                  <Palette size={18} /> শেড কালেকশন
+                </Link>
+              </div>
             </div>
             <div className="hero-proof">
               <span>
@@ -69,13 +71,27 @@ const loop = moving ? [...categories, ...categories] : categories;
                 <Palette size={16} /> {fmt(shadeCount)}টি মনের মতো শেড
               </span>
             </div>
+            {slides.length > 1 && (
+              <div className="hero-dots">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    aria-label={`স্লাইড ${i + 1}`}
+                    className={i === slideIndex % slides.length ? 'active' : ''}
+                    onClick={() => setSlideIndex(i)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
           <div className="hero-visual">
             <div className="hero-photo-frame">
               <img
-                className="hero-photo"
-                src={settings.heroImage}
-                alt="রঙিন সুতা ও কুশি কাঁটার কালেকশন"
+                key={`i${slideIndex}`}
+                className="hero-photo hero-slide-in"
+                src={slide.image}
+                alt={slide.title}
                 fetchPriority="high"
               />
               <div className="image-soft-overlay" />
