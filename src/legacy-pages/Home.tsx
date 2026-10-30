@@ -1,14 +1,44 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, Palette, ShieldCheck, Sparkles, Star } from 'lucide-react';
 import { useStore } from '../lib/store';
 import { BrandMark, ProductCard } from '../components/UI';
 import { fmt, money } from '../lib/types';
-
+import { useAutoScroll } from '../lib/useAutoScroll';
 export default function Home() {
   const { settings, categories, products } = useStore();
-  const moving = categories.length > 4;
-const loop = moving ? [...categories, ...categories] : categories;
+    const catRef = useAutoScroll<HTMLDivElement>(categories.length, 3500);
+  const slides = [
+    {
+      eyebrow: settings.heroEyebrow,
+      title: settings.heroTitle,
+      accent: settings.heroAccent,
+      description: settings.heroDescription,
+      button: settings.heroButtonText,
+      link: '/shop',
+      image: settings.heroImage,
+    },
+    ...categories
+      .filter((c) => c.image)
+      .slice(0, 3)
+      .map((c) => ({
+        eyebrow: 'আমাদের কালেকশন',
+        title: c.name,
+        accent: 'এখন আপনার জন্য',
+        description: `${c.name} ক্যাটাগরির সেরা পণ্যগুলো এক জায়গায় দেখুন`,
+        button: `${c.name} দেখুন`,
+        link: `/shop?category=${c.id}`,
+        image: c.image,
+      })),
+  ];
+  const [slideIndex, setSlideIndex] = useState(0);
+  useEffect(() => {
+    if (slides.length < 2) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t = setInterval(() => setSlideIndex((i) => (i + 1) % slides.length), 5500);
+    return () => clearInterval(t);
+  }, [slides.length]);
+  const slide = slides[slideIndex % slides.length];
   const [tab, setTab] = useState('popular');
   const shadeCount = new Set(
     products.filter((p) => p.active && p.variantLabel !== 'সাইজ').flatMap((p) => p.shades.map((s) => s.code))
