@@ -345,21 +345,27 @@ export function Layout() {
           <span>ট্র্যাক</span>
         </button>
       </nav>
-{bagCount > 0 && panel !== 'cart' && (
-  <button
-    key={bagCount}
-    type="button"
-    className="floating-bag"
-    onClick={() => setPanel('cart')}
-    aria-label={`ব্যাগ খুলুন, ${bagCount}টি পণ্য`}
-  >
-    <ShoppingBag size={22} />
-    <span className="floating-bag-text">
-      ব্যাগ · {fmt(bagCount)}টি
-      <small>{money(bagTotal)}</small>
-    </span>
-  </button>
-)}
+      {bagCount > 0 && panel !== 'cart' && (
+        <button
+          key={bagCount}
+          type="button"
+          className={`floating-bag ${bagNudge ? 'nudge' : ''}`}
+          onClick={() => setPanel('cart')}
+          aria-label={`ব্যাগ খুলুন, ${bagCount}টি পণ্য`}
+        >
+          <span className="fb-icon">
+            <ShoppingBag size={22} />
+            <i>{fmt(bagCount)}</i>
+          </span>
+          <span className="floating-bag-text">
+            <strong>আমার ব্যাগ</strong>
+            <small>{money(bagTotal)}</small>
+          </span>
+          <span className="fb-go">
+            দেখুন <ArrowRight size={15} />
+          </span>
+        </button>
+      )}
             <div className={`help-dial ${dialOpen ? 'open' : ''}`}>
         <div className="help-dial-items">
           <a
