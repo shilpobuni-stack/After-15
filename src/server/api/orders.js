@@ -187,24 +187,59 @@ export default async function handler(req, res) {
       if (mobilePay && !/^TrxID: [A-Z0-9]{8,15}(?:\n|$)/.test(userNote)) return res.status(400).json({ error: 'ভুল বা অনুপস্থিত ট্রানজেকশন আইডি — অর্ডার নিশ্চিত করা যায়নি।' });
       const note = userNote ? `[পেমেন্ট: ${paymentLabel}]\n${userNote}` : `[পেমেন্ট: ${paymentLabel}]`;
 
-      for (const { product, shade, quantity, stock } of reservations) {
-        if (shade) {
-          const { data: fresh, error: freshError } = await supabase.from('products').select('shades').eq('id', product.id).single();
-          if (freshError) throw freshError;
-          const freshShades = Array.isArray(fresh?.shades) ? fresh.shades : [];
-          const freshShade = freshShades.find((entry) => entry.id === shade.id);
-          const freshStock = Number(freshShade?.stock || 0);
-          if (!freshShade || freshStock < quantity) return res.status(400).json({ error: `${product.name} · ${shade.name} স্টকে নেই` });
-          const newShades = freshShades.map((entry) => entry.id === shade.id ? { ...entry, stock: freshStock - quantity } : entry);
-          const { data: updated, error: updateError } = await supabase.from('products').update({ shades: newShades, stock: 0 }).eq('id', product.id).contains('shades', [freshShade]).select('id');
-          if (updateError) throw updateError;
-          if (!updated?.length) return res.status(400).json({ error: 'স্টক আপডেট ব্যর্থ — আবার চেষ্টা করুন' });
-        } else {
-          const { data: updated, error: updateError } = await supabase.from('products').update({ stock: stock - quantity }).eq('id', product.id).eq('stock', stock).gte('stock', quantity).select('id');
-          if (updateError) throw updateError;
-          if (!updated?.length) return res.status(400).json({ error: `${product.name} স্টকে নেই` });
+           const reserved = [];
+      const restoreStock = async () => {
+        for (const r of reserved) {
+          try {
+            const { data: cur } = await supabase.from('products').select('stock, shades').eq('id', r.product.id).single();
+            if (!cur) continue;
+            if (r.shade) {
+              const shades = (Array.isArray(cur.shades) ? cur.shades : []).map((e) =>
+                e.id === r.shade.id ? { ...e, stock: Number(e.stock || 0) + r.quantity } : e
+              );
+              await supabase.from('products').update({ shades }).eq('id', r.product.id);
+            } else {
+              await supabase.from('products').update({ stock: Number(cur.stock || 0) + r.quantity }).eq('id', r.product.id);
+            }
+          } catch (restoreError) {
+            console.error('stock restore failed', restoreError);
+          }
         }
-      }
+      };
+
+      try {
+        for (const { product, shade, quantity, stock } of reservations) {
+          if (shade) {
+            const { data: fresh, error: freshError } = await supabase.from('products').select('shades').eq('id', product.id).single();
+            if (freshError) throw freshError;
+            const freshShades = Array.isArray(fresh?.shades) ? fresh.shades : [];
+            const freshShade = freshShades.find((entry) => entry.id === shade.id);
+            const freshStock = Number(freshShade?.stock || 0);
+            if (!freshShade || freshStock < quantity) {
+              await restoreStock();
+              return res.status(400).json({ error: `${product.name} · ${shade.name} স্টকে নেই` });
+            }
+            const newShades = freshShades.map((entry) => entry.id === shade.id ? { ...entry, stock: freshStock - quantity } : entry);
+            const { data: updated, error: updateError } = await supabase.from('products').update({ shades: newShades, stock: 0 }).eq('id', product.id).contains('shades', [freshShade]).select('id');
+            if (updateError) throw updateError;
+            if (!updated?.length) {
+              await restoreStock();
+              return res.status(400).json({ error: 'স্টক আপডেট ব্যর্থ — আবার চেষ্টা করুন' });
+            }
+          } else {
+            const { data: updated, error: updateError } = await supabase.from('products').update({ stock: stock - quantity }).eq('id', product.id).eq('stock', stock).gte('stock', quantity).select('id');
+            if (updateError) throw updateError;
+            if (!updated?.length) {
+              await restoreStock();
+              return res.status(400).json({ error: `${product.name} স্টকে নেই` });
+            }
+          }
+          reserved.push({ product, shade, quantity });
+        }
+      } catch (reserveError) {
+        await restoreStock();
+        throw reserveError;
+  }
 
       const order = {
         id: genOrderId(), request_id: requestId,
