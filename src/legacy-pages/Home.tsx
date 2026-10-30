@@ -184,7 +184,6 @@ const loop = moving ? [...categories, ...categories] : categories;
     ))}
   </div>
 </div>
-          </div>
         </section>
       )}
 
