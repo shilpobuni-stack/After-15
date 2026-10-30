@@ -7,6 +7,8 @@ import { fmt, money } from '../lib/types';
 
 export default function Home() {
   const { settings, categories, products } = useStore();
+  const moving = categories.length > 4;
+const loop = moving ? [...categories, ...categories] : categories;
   const [tab, setTab] = useState('popular');
   const shadeCount = new Set(
     products.filter((p) => p.active && p.variantLabel !== 'সাইজ').flatMap((p) => p.shades.map((s) => s.code))
