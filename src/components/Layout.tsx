@@ -28,13 +28,17 @@ import { PolicyModal, type PolicyKind } from './PolicyModal';
 import { fmt, money, whatsappLink } from '../lib/types';
 
 export function Layout() {
-  const { settings, cart, wishlist, setPanel, categories, products } = useStore();
+  const { settings, cart, wishlist, setPanel, categories, products, panel } = useStore();
   const [query, setQuery] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
   const [policy, setPolicy] = useState<PolicyKind | null>(null);
   const navigate = useNavigate();
   const bagCount = cart.reduce((a, c) => a + c.quantity, 0);
+  const bagTotal = cart.reduce(
+  (a, c) => a + (products.find((p) => p.id === c.productId)?.price ?? 0) * c.quantity,
+  0
+);
   const shadeCount = new Set(
     products.filter((p) => p.active && p.variantLabel !== 'সাইজ').flatMap((p) => p.shades.map((s) => s.code))
   ).size;
