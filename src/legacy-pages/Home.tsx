@@ -156,34 +156,23 @@ const loop = moving ? [...categories, ...categories] : categories;
               সব ক্যাটাগরি <ArrowRight size={16} />
             </Link>
           </div>
-          <div className={moving ? 'category-marquee' : 'category-grid'}>
-  <div
-    className={moving ? 'category-track' : 'category-grid-flat'}
-    style={moving ? { animationDuration: `${categories.length * 6}s` } : undefined}
-  >
-    {loop.map((c, i) => (
-      <Link
-        key={`${c.id}-${i}`}
-        to={`/shop?category=${c.id}`}
-        className={`category-card category-${(i % categories.length) % 6}`}
-        aria-hidden={moving && i >= categories.length ? true : undefined}
-        tabIndex={moving && i >= categories.length ? -1 : undefined}
-      >
-        <div className="category-image">
-          <img loading="lazy" src={c.image} alt={c.name} />
-          <span className="category-arrow">
-            <ArrowRight size={17} />
-          </span>
-        </div>
-        <h3>{c.name}</h3>
-        <span>
-          {fmt(products.filter((p) => p.active && p.category === c.id).length)}টি পণ্য{' '}
-          <Sparkles size={12} />
-        </span>
-      </Link>
-    ))}
-  </div>
-</div>
+                    <div className="category-slider" ref={catRef}>
+            {categories.map((c, i) => (
+              <Link key={c.id} to={`/shop?category=${c.id}`} className={`category-card category-${i % 6}`}>
+                <div className="category-image">
+                  <img loading="lazy" src={c.image} alt={c.name} />
+                  <span className="category-arrow">
+                    <ArrowRight size={17} />
+                  </span>
+                </div>
+                <h3>{c.name}</h3>
+                <span>
+                  {fmt(products.filter((p) => p.active && p.category === c.id).length)}টি পণ্য{' '}
+                  <Sparkles size={12} />
+                </span>
+              </Link>
+            ))}
+          </div>
         </section>
       )}
 
