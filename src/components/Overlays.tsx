@@ -192,7 +192,16 @@ function CartDrawer() {
     ];
   });
   const subtotal = lines.reduce((a, l) => a + l.product.price * l.quantity, 0);
-  const delivery = lines.length ? (region === 'inside' ? 80 : 150) : 0;
+    const totalWeight = lines.reduce((a, l) => a + Number(l.product.weight || 0) * l.quantity, 0);
+  const freeLimit = Number(settings.freeThreshold ?? 2000);
+  const extraSteps = settings.weightEnabled !== false
+    ? Math.ceil(Math.max(0, totalWeight - Number(settings.baseWeight ?? 500)) / Math.max(1, Number(settings.weightStep ?? 500)))
+    : 0;
+  const delivery = lines.length
+    ? freeLimit > 0 && subtotal >= freeLimit
+      ? 0
+      : Number(settings[region] ?? (region === 'outside' ? 130 : 80)) + extraSteps * Number(settings.extraCharge ?? 20)
+    : 0;
   const discount = coupon ? Math.round(subtotal * coupon.percent / 100) : 0;
   const stockIssue = lines.some((l) => !l.product.active || l.quantity > l.stock);
   const bagCount = cart.reduce((a, c) => a + c.quantity, 0);
