@@ -1866,6 +1866,12 @@ function AppearanceAdmin({ kind }: { kind: 'appearance' | 'content' }) {
                 <Field label="নগদ নম্বর">
                   <input value={form.nagadNumber} onChange={(e) => set('nagadNumber', e.target.value)} placeholder="01XXXXXXXXX" />
                 </Field>
+                                <Field label="রকেট নম্বর">
+                  <input value={form.rocketNumber} onChange={(e) => set('rocketNumber', e.target.value)} placeholder="01XXXXXXXXX" />
+                </Field>
+                <Field label="ব্যাংক অ্যাকাউন্টের তথ্য">
+                  <textarea value={form.bankInfo} onChange={(e) => set('bankInfo', e.target.value)} rows={3} placeholder={'ব্যাংকের নাম:\nঅ্যাকাউন্টের নাম:\nঅ্যাকাউন্ট নম্বর:\nশাখা:'} />
+                </Field>
               </div>
             </section>
             <section className="admin-card settings-card">
