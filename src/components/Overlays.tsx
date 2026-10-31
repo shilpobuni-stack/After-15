@@ -331,7 +331,7 @@ function CartDrawer() {
     <Modal
       title={
         step === 'checkout'
-          ? 'অর্ডারের তথ্য'
+                    ? 'অর্ডার সম্পন্ন করুন'
           : step === 'done'
             ? 'আপনার অনলাইন অর্ডার'
             : `আমার ব্যাগ (${fmt(bagCount)})`
@@ -440,10 +440,10 @@ function CartDrawer() {
               disabled={stockIssue}
               onClick={() => setStep('checkout')}
             >
-              অর্ডার করতে এগিয়ে যান <ArrowRight size={17} />
+                            অর্ডার করুন <ArrowRight size={17} />
             </button>
-            <p className="cart-note">
-              COD · বিকাশ · নগদ · রকেট · WhatsApp {settings.phone}
+                        <p className="cart-note">
+              ক্যাশ অন ডেলিভারি অথবা অ্যাডভান্স পেমেন্ট (বিকাশ · নগদ · রকেট · ব্যাংক)
             </p>
           </div>
         ) : (
