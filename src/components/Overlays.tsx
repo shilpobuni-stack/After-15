@@ -459,16 +459,25 @@ function CartDrawer() {
               </select>
             </label>
             {summary}
-            <button
-              className="button primary full-width"
+                        <button
+              className="button primary full-width co-submit"
               disabled={stockIssue}
               onClick={() => setStep('checkout')}
             >
-                            অর্ডার করুন <ArrowRight size={17} />
+              অর্ডার করুন · {money(subtotal - discount + delivery)} <ArrowRight size={17} />
             </button>
-                        <p className="cart-note">
-              ক্যাশ অন ডেলিভারি অথবা অ্যাডভান্স পেমেন্ট (বিকাশ · নগদ · রকেট · ব্যাংক)
-            </p>
+            <div className="cart-trust">
+              <span>
+                <ShieldCheck size={15} /> নিরাপদ অর্ডার
+              </span>
+              <span>
+                <Truck size={15} /> সারা দেশে ডেলিভারি
+              </span>
+              <span>
+                <Banknote size={15} /> ক্যাশ অন ডেলিভারি
+              </span>
+            </div>
+            <p className="cart-note">অ্যাডভান্স পেমেন্ট: বিকাশ · নগদ · রকেট · ব্যাংক</p>
           </div>
         ) : (
           <EmptyState title="ব্যাগ এখনো খালি" text="পছন্দের সুতা বা শেড বেছে ব্যাগে যোগ করুন।">
@@ -512,10 +521,8 @@ function CartDrawer() {
                 <input
                   name="phone"
                   type="tel"
-                  inputMode="numeric"
+                                    inputMode="tel"
                   required
-                  pattern="01[3-9][0-9]{8}"
-                  title="১১ সংখ্যার বাংলাদেশি নম্বর, যেমন 01XXXXXXXXX"
                   placeholder="01XXXXXXXXX"
                   autoComplete="tel"
                 />
