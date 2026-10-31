@@ -171,12 +171,30 @@ function CartDrawer() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const requestRef = useRef({ signature: '', id: '' });
-  const needsTrx = payment === 'bkash' || payment === 'nagad' || payment === 'rocket';
+    const ADVANCE_IDS: PaymentMethod[] = ['bkash', 'nagad', 'rocket', 'bank'];
+  const advance = ADVANCE_IDS.includes(payment);
+  const needsTrx = advance;
+  const payNumber =
+    payment === 'bkash'
+      ? settings.bkashNumber
+      : payment === 'nagad'
+        ? settings.nagadNumber
+        : payment === 'rocket'
+          ? settings.rocketNumber || settings.phone
+          : '';
 
   function isValidTrxId(value: string) {
-    // bKash / Nagad / Rocket: 8–15 alphanumeric, no spaces/special chars
-    return /^[A-Z0-9]{8,15}$/.test(value);
+    return payment === 'bank' ? /^[A-Z0-9-]{6,30}$/.test(value) : /^[A-Z0-9]{8,15}$/.test(value);
   }
+
+  async function copyNumber(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      notify('নম্বর কপি হয়েছে');
+    } catch {
+      notify('কপি হয়নি, নম্বরটি হাতে লিখে নিন');
+    }
+      }
 
   const lines = cart.flatMap((item) => {
     const product = products.find((p) => p.id === item.productId);
@@ -250,12 +268,12 @@ function CartDrawer() {
     const trx = String(fd.get('trxId') ?? trxId);
     if (needsTrx) {
       if (!trx) {
-        notify('বিকাশ/নগদ/রকেটের জন্য ট্রানজেকশন আইডি বাধ্যতামূলক।');
+                notify('অ্যাডভান্স পেমেন্টের জন্য ট্রানজেকশন আইডি দিতে হবে।');
         setError('ট্রানজেকশন আইডি দিন।');
         return;
       }
       if (!isValidTrxId(trx)) {
-        notify('সঠিক ট্রানজেকশন আইডি দিন (৮–১৫ অক্ষর/সংখ্যা, স্পেস ছাড়া)।');
+                notify('সঠিক ট্রানজেকশন আইডি দিন (স্পেস ছাড়া, শুধু অক্ষর ও সংখ্যা)।');
         setError('ভুল ট্রানজেকশন আইডি — অর্ডার নিশ্চিত করা যায়নি।');
         return;
       }
