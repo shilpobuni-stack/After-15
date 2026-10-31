@@ -515,7 +515,7 @@ export function mapSettings(n: Record<string, unknown>): Partial<Settings> {
     if (extra) {
       try {
         const saved = JSON.parse(extra.answer) as Record<string, unknown>;
-        for (const key of ['facebookUrl', 'instagramUrl', 'whatsappNumber', 'bkashNumber', 'nagadNumber'] as const) {
+                for (const key of ['facebookUrl', 'instagramUrl', 'whatsappNumber', 'bkashNumber', 'nagadNumber', 'rocketNumber', 'bankInfo'] as const) {
           if (typeof saved[key] === 'string') out[key] = saved[key];
         }
       } catch { /* keep defaults */ }
