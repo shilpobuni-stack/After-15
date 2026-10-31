@@ -135,7 +135,14 @@ export function whatsappLink(message = STORE_WHATSAPP_MSG, phone = STORE_PHONE) 
   const number = digits.startsWith('0') ? `88${digits}` : digits;
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
-
+export function normalizePhone(value: string): string {
+  const digits = String(value || '').replace(/\D/g, '');
+  let phone = digits;
+  if (digits.startsWith('00880') && digits.length === 15) phone = `0${digits.slice(5)}`;
+  else if (digits.startsWith('880') && digits.length === 13) phone = `0${digits.slice(3)}`;
+  else if (digits.length === 10 && digits.startsWith('1')) phone = `0${digits}`;
+  return /^01[3-9][0-9]{8}$/.test(phone) ? phone : '';
+  }
 export type Panel = 'cart' | 'orders' | 'wishlist' | 'help' | 'privacy' | null;
 
 export type SelectedProduct = { id: string; shadeId?: string } | null;
