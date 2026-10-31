@@ -7,7 +7,7 @@ import { fmt, money } from '../lib/types';
 import { useAutoScroll } from '../lib/useAutoScroll';
 export default function Home() {
   const { settings, categories, products } = useStore();
-    const catRef = useAutoScroll<HTMLDivElement>(categories.length, 3500);
+    const catRef = useAutoScroll<HTMLDivElement>(categories.length, 2500);
   const slides = [
     {
       eyebrow: settings.heroEyebrow,
@@ -35,7 +35,7 @@ export default function Home() {
   useEffect(() => {
     if (slides.length < 2) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const t = setInterval(() => setSlideIndex((i) => (i + 1) % slides.length), 5500);
+    const t = setInterval(() => setSlideIndex((i) => (i + 1) % slides.length), 3500);
     return () => clearInterval(t);
   }, [slides.length]);
   const slide = slides[slideIndex % slides.length];
