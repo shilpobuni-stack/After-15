@@ -2,18 +2,25 @@ import { useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import {
+import {
   ArrowLeft,
   ArrowRight,
+  Banknote,
   Check,
   ChevronDown,
+  Copy,
   Download,
   Heart,
   Info,
+  Lock,
   MapPin,
   Package,
+  Phone,
   Search,
   ShieldCheck,
+  Smartphone,
   Truck,
+  User,
   X,
 } from 'lucide-react';
 import { useStore } from '../lib/store';
@@ -148,7 +155,7 @@ function ProductDetail({ product, initialShade }: { product: Product; initialSha
                 setPanel('cart');
               }}
             >
-              চেকআউটে যান <ArrowRight size={17} />
+                            অর্ডার করুন <ArrowRight size={17} />
             </button>
           </div>
         </div>
