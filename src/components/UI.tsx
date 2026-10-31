@@ -174,6 +174,11 @@ export function ProductCard({ product }: { product: Product }) {
             {product.badge === 'বেস্টসেলার' && <span>✧</span>} {product.badge}
           </span>
         )}
+                {product.oldPrice > product.price && (
+          <span className="discount-badge">
+            -{Math.round((1 - product.price / product.oldPrice) * 100)}%
+          </span>
+        )}
         <button
           className={`wish-button ${wished ? 'is-wished' : ''}`}
           onClick={() => toggleWish(product.id)}
