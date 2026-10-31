@@ -41,9 +41,12 @@ function genericNotFound(res) {
 
 function normalizePhone(value) {
   const digits = String(value || '').replace(/\D/g, '');
-  const phone = digits.startsWith('880') && digits.length === 13 ? `0${digits.slice(3)}` : digits;
+  let phone = digits;
+  if (digits.startsWith('00880') && digits.length === 15) phone = `0${digits.slice(5)}`;
+  else if (digits.startsWith('880') && digits.length === 13) phone = `0${digits.slice(3)}`;
+  else if (digits.length === 10 && digits.startsWith('1')) phone = `0${digits}`;
   return /^01[3-9][0-9]{8}$/.test(phone) ? phone : '';
-}
+    }
 
 function parseOrderId(value) {
   const id = String(value || '').trim().toUpperCase();
@@ -108,8 +111,10 @@ export default async function handler(req, res) {
       const items = Array.isArray(body.items) ? body.items : [];
       const requestId = body.requestId ? String(body.requestId).slice(0, 120) : null;
       const expectedTotal = Number(body.expectedTotal ?? -1);
+            const normalizedPhone = normalizePhone(customer.phone);
       if (!customer.name || !customer.phone || !customer.address) return res.status(400).json({ error: 'নাম, ফোন ও ঠিকানা প্রয়োজন' });
-      if (!/^01[3-9][0-9]{8}$/.test(String(customer.phone).trim())) return res.status(400).json({ error: 'সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)' });
+      if (!normalizedPhone) return res.status(400).json({ error: 'সঠিক মোবাইল নম্বর দিন (যেমন 01XXXXXXXXX বা +8801XXXXXXXXX)' });
+      customer.phone = normalizedPhone;
       if (!items.length) return res.status(400).json({ error: 'ব্যাগ খালি' });
       if (items.length > 100 || !['inside', 'outside'].includes(customer.region)) return res.status(400).json({ error: 'অর্ডারের তথ্য সঠিক নয়' });
       const uniqueLines = new Set();
