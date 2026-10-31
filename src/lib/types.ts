@@ -382,6 +382,8 @@ export const DEFAULT_SETTINGS: Settings = {
   whatsappNumber: '',
   bkashNumber: '',
   nagadNumber: '',
+    rocketNumber: '',
+  bankInfo: '',
   address: 'বাংলাদেশ',
   inside: 80,
   outside: 130,
