@@ -2,7 +2,6 @@ import { useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import {
-import {
   ArrowLeft,
   ArrowRight,
   Banknote,
