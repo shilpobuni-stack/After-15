@@ -462,106 +462,228 @@ function CartDrawer() {
             <Info size={17} />
             <span>
               অর্ডার অনলাইনে সংরক্ষিত হলে সরাসরি মার্চেন্টের কাছে পৌঁছাবে। মূল্য, শেডের স্টক ও
-              ডেলিভারি চার্জ সার্ভারে যাচাই করা হয়।
-            </span>
-          </div>
-          <label className="field">
-            <span>আপনার নাম *</span>
-            <input name="name" required minLength={2} maxLength={120} placeholder="সম্পূর্ণ নাম" autoComplete="name" />
-          </label>
-          <label className="field">
-            <span>মোবাইল নম্বর *</span>
-            <input
-              name="phone"
-              type="tel"
-              required
-              pattern="01[3-9][0-9]{8}"
-              title="11 সংখ্যার বাংলাদেশি নম্বর, যেমন 01818898944"
-              placeholder="01XXXXXXXXX"
-              autoComplete="tel"
-            />
-          </label>
-          <label className="field">
-            <span>ডেলিভারি এলাকা *</span>
-            <select value={region} onChange={(e) => setRegion(e.target.value as 'inside' | 'outside')}>
-              <option value="inside">ঢাকার ভিতরে</option>
-              <option value="outside">ঢাকার বাইরে</option>
-            </select>
-          </label>
-          <label className="field">
-            <span>সম্পূর্ণ ঠিকানা *</span>
-            <input
-              name="address"
-              required
-              minLength={8}
-              placeholder="বাসা, রাস্তা, এলাকা, থানা ও জেলা"
-              autoComplete="street-address"
-            />
-          </label>
-          <fieldset className="field payment-methods">
-            <span>পেমেন্ট পদ্ধতি *</span>
-            <div className="payment-options" role="radiogroup" aria-label="পেমেন্ট পদ্ধতি">
-              {PAYMENT_OPTIONS.map((opt) => (
-                <label key={opt.id} className={`payment-option ${payment === opt.id ? 'selected' : ''}`}>
-                  <input
-                    type="radio"
-                    name="payment"
-                    value={opt.id}
-                    checked={payment === opt.id}
-                    onChange={() => setPayment(opt.id)}
-                  />
-                  <span>{opt.label}</span>
-                </label>
-              ))}
+        <form className="checkout-form co-form" onSubmit={onCheckout}>
+          <button type="button" className="back-button" onClick={() => setStep('cart')}>
+            <ArrowLeft size={16} /> ব্যাগে ফিরে যান
+          </button>
+
+          <div className="co-recap">
+            <div>
+              <small>আপনার ব্যাগ</small>
+              <strong>{fmt(bagCount)}টি পণ্য</strong>
             </div>
-            {payment !== 'cod' && (
-              <small className="payment-hint">
-                {payment === 'bkash' && (settings.bkashNumber ? `বিকাশ: ${settings.bkashNumber} (Personal) — এই নম্বরে টাকা পাঠিয়ে নিচের ঘরে ট্রানজেকশন আইডি দিন।` : 'বিকাশ নম্বর জানতে দোকানে যোগাযোগ করুন।')}
-                {payment === 'nagad' && (settings.nagadNumber ? `নগদ: ${settings.nagadNumber} (Personal) — এই নম্বরে টাকা পাঠিয়ে নিচের ঘরে ট্রানজেকশন আইডি দিন।` : 'নগদ নম্বর জানতে দোকানে যোগাযোগ করুন।')}
-                {payment === 'rocket' && `রকেট: ${settings.phone} — এই নম্বরে টাকা পাঠিয়ে নিচের ঘরে ট্রানজেকশন আইডি দিন।`}
-                {payment === 'card' && 'কার্ড/অন্যান্য পেমেন্ট ডেলিভারির সময় বা মার্চেন্টের নির্দেশে সম্পন্ন হবে।'}
-              </small>
-            )}
-          </fieldset>
-          {needsTrx && (
-            <label className="field">
-              <span>ট্রানজেকশন আইডি *</span>
-              <input
-                name="trxId"
-                value={trxId}
-                onChange={(e) => setTrxId(e.target.value.toUpperCase())}
-                required
-                minLength={8}
-                maxLength={15}
-                pattern="[A-Za-z0-9]{8,15}"
-                title="৮–১৫ অক্ষর/সংখ্যার সঠিক ট্রানজেকশন আইডি"
-                placeholder="যেমন: 8N7XXXXXXX"
-                autoComplete="off"
-                inputMode="text"
-              />
-              <small>অ্যাপ/SMS-এর TrxID হুবহু লিখুন — ভুল আইডি দিলে অর্ডার নিশ্চিত হবে না।</small>
+            <div className="co-recap-total">
+              <small>সর্বমোট</small>
+              <strong>{money(subtotal - discount + delivery)}</strong>
+            </div>
+          </div>
+
+          <section className="co-card">
+            <h3>
+              <span className="co-num">১</span> আপনার তথ্য
+            </h3>
+            <label className="co-field">
+              <span>আপনার নাম</span>
+              <div className="co-input">
+                <User size={18} />
+                <input name="name" required minLength={2} maxLength={120} placeholder="সম্পূর্ণ নাম লিখুন" autoComplete="name" />
+              </div>
             </label>
-          )}
-          <label className="field">
-            <span>বিশেষ নির্দেশনা (ঐচ্ছিক)</span>
-            <textarea name="note" rows={2} placeholder="ডেলিভারি সম্পর্কে কিছু বলতে চাইলে..." />
-          </label>
-          <div className="field">
-            <span>কুপন কোড (ঐচ্ছিক)</span>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <input value={couponInput} onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCoupon(null); setCouponError(''); }} placeholder="কুপন কোড" />
-              <button className="button secondary" type="button" onClick={applyCoupon} disabled={couponBusy || !couponInput.trim()}>
-                {couponBusy ? 'যাচাই হচ্ছে...' : 'প্রয়োগ করুন'}
+            <label className="co-field">
+              <span>মোবাইল নম্বর</span>
+              <div className="co-input">
+                <Phone size={18} />
+                <input
+                  name="phone"
+                  type="tel"
+                  inputMode="numeric"
+                  required
+                  pattern="01[3-9][0-9]{8}"
+                  title="১১ সংখ্যার বাংলাদেশি নম্বর, যেমন 01XXXXXXXXX"
+                  placeholder="01XXXXXXXXX"
+                  autoComplete="tel"
+                />
+              </div>
+            </label>
+            <label className="co-field">
+              <span>পূর্ণ ঠিকানা</span>
+              <div className="co-input">
+                <MapPin size={18} />
+                <input
+                  name="address"
+                  required
+                  minLength={8}
+                  placeholder="বাসা, রাস্তা, এলাকা, থানা ও জেলা"
+                  autoComplete="street-address"
+                />
+              </div>
+            </label>
+          </section>
+
+          <section className="co-card">
+            <h3>
+              <span className="co-num">২</span> কোথায় পাঠাবো?
+            </h3>
+            <div className="co-choice-row">
+              <button
+                type="button"
+                className={`co-choice ${region === 'inside' ? 'on' : ''}`}
+                onClick={() => setRegion('inside')}
+              >
+                <Truck size={20} />
+                <b>ঢাকার ভিতরে</b>
+              </button>
+              <button
+                type="button"
+                className={`co-choice ${region === 'outside' ? 'on' : ''}`}
+                onClick={() => setRegion('outside')}
+              >
+                <Truck size={20} />
+                <b>ঢাকার বাইরে</b>
               </button>
             </div>
-            {couponError && <small className="field-error">{couponError}</small>}
-            {coupon && <small>{coupon.percent}% ছাড় প্রয়োগ হয়েছে</small>}
-          </div>
+          </section>
+
+          <section className="co-card">
+            <h3>
+              <span className="co-num">৩</span> টাকা কীভাবে দিবেন?
+            </h3>
+            <div className="co-pay-main">
+              <button
+                type="button"
+                className={`co-pay ${!advance ? 'on' : ''}`}
+                onClick={() => {
+                  setPayment('cod');
+                  setTrxId('');
+                }}
+              >
+                <Banknote size={22} />
+                <span>
+                  <b>ক্যাশ অন ডেলিভারি</b>
+                  <small>পণ্য হাতে পেয়ে টাকা দিন</small>
+                </span>
+              </button>
+              <button
+                type="button"
+                className={`co-pay ${advance ? 'on' : ''}`}
+                onClick={() => {
+                  if (!advance) {
+                    setPayment('bkash');
+                    setTrxId('');
+                  }
+                }}
+              >
+                <Smartphone size={22} />
+                <span>
+                  <b>অ্যাডভান্স পেমেন্ট</b>
+                  <small>বিকাশ · নগদ · রকেট · ব্যাংক</small>
+                </span>
+              </button>
+            </div>
+
+            {advance && (
+              <div className="co-advance">
+                <div className="co-chips" role="radiogroup" aria-label="কোন মাধ্যমে পাঠাবেন">
+                  {ADVANCE_IDS.map((id) => (
+                    <button
+                      key={id}
+                      type="button"
+                      role="radio"
+                      aria-checked={payment === id}
+                      className={`co-chip co-${id} ${payment === id ? 'on' : ''}`}
+                      onClick={() => {
+                        setPayment(id);
+                        setTrxId('');
+                      }}
+                    >
+                      {({ bkash: 'বিকাশ', nagad: 'নগদ', rocket: 'রকেট', bank: 'ব্যাংক' } as Record<string, string>)[id]}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="co-paybox">
+                  <p>
+                    নিচের {payment === 'bank' ? 'অ্যাকাউন্টে' : 'নম্বরে'} <b>{money(subtotal - discount + delivery)}</b> পাঠান
+                    {payment !== 'bank' ? ' (Send Money)' : ''}:
+                  </p>
+                  {payment === 'bank' ? (
+                    settings.bankInfo ? (
+                      <pre className="co-bank">{settings.bankInfo}</pre>
+                    ) : (
+                      <p className="co-warn">ব্যাংকের তথ্য জানতে WhatsApp-এ যোগাযোগ করুন।</p>
+                    )
+                  ) : payNumber ? (
+                    <div className="co-number">
+                      <strong>{payNumber}</strong>
+                      <button type="button" onClick={() => copyNumber(payNumber)}>
+                        <Copy size={15} /> কপি
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="co-warn">নম্বর জানতে WhatsApp-এ যোগাযোগ করুন।</p>
+                  )}
+                </div>
+
+                <label className="co-field">
+                  <span>{payment === 'bank' ? 'ট্রান্সফারের রেফারেন্স নম্বর' : 'ট্রানজেকশন আইডি (TrxID)'}</span>
+                  <div className="co-input">
+                    <Lock size={18} />
+                    <input
+                      name="trxId"
+                      value={trxId}
+                      onChange={(e) => setTrxId(e.target.value.toUpperCase())}
+                      required
+                      minLength={payment === 'bank' ? 6 : 8}
+                      maxLength={payment === 'bank' ? 30 : 15}
+                      pattern={payment === 'bank' ? '[A-Za-z0-9\\-]{6,30}' : '[A-Za-z0-9]{8,15}'}
+                      title="পেমেন্টের পর পাওয়া সঠিক আইডি লিখুন"
+                      placeholder="যেমন: 8N7XXXXXXX"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <small>টাকা পাঠানোর পর SMS বা অ্যাপে পাওয়া আইডি হুবহু লিখুন। ভুল আইডি দিলে অর্ডার নিশ্চিত হবে না।</small>
+                </label>
+              </div>
+            )}
+          </section>
+
+          <section className="co-card">
+            <h3>
+              <span className="co-num">৪</span> আরও কিছু (ঐচ্ছিক)
+            </h3>
+            <label className="co-field">
+              <span>ডেলিভারির বিশেষ নির্দেশ</span>
+              <textarea name="note" rows={2} className="co-textarea" placeholder="ডেলিভারি সম্পর্কে কিছু বলতে চাইলে লিখুন..." />
+            </label>
+            <div className="co-field">
+              <span>কুপন কোড</span>
+              <div className="co-coupon">
+                <input
+                  value={couponInput}
+                  onChange={(e) => {
+                    setCouponInput(e.target.value.toUpperCase());
+                    setCoupon(null);
+                    setCouponError('');
+                  }}
+                  placeholder="কুপন কোড থাকলে দিন"
+                />
+                <button className="button secondary" type="button" onClick={applyCoupon} disabled={couponBusy || !couponInput.trim()}>
+                  {couponBusy ? 'দেখা হচ্ছে...' : 'প্রয়োগ'}
+                </button>
+              </div>
+              {couponError && <small className="field-error">{couponError}</small>}
+              {coupon && <small className="co-ok">✓ {coupon.percent}% ছাড় পেয়েছেন</small>}
+            </div>
+          </section>
+
           {summary}
           {error && <p className="cloud-error">{error}</p>}
-          <button className="button primary full-width" type="submit" disabled={submitting}>
-            {submitting ? 'অর্ডার পাঠানো হচ্ছে...' : 'অর্ডার নিশ্চিত করুন'}
+          <button className="button primary full-width co-submit" type="submit" disabled={submitting}>
+            {submitting ? 'অর্ডার পাঠানো হচ্ছে...' : `অর্ডার নিশ্চিত করুন · ${money(subtotal - discount + delivery)}`}
           </button>
+          <p className="co-trust">
+            <Lock size={14} /> আপনার তথ্য নিরাপদ · সারা দেশে ডেলিভারি
+          </p>
           <p className="cart-note">
             সাহায্য লাগলে{' '}
             <a href={whatsappLink(undefined, settings.phone)} target="_blank" rel="noopener noreferrer">
