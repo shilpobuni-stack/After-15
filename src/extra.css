@@ -112,3 +112,17 @@ html:has(.modal-backdrop),body:has(.modal-backdrop){overflow:hidden}
 /* ছাড়ের % ব্যাজ */
 .discount-badge{position:absolute;left:10px;bottom:10px;z-index:2;padding:4px 9px;border-radius:999px;background:#e6004c;color:#fff;font-size:11px;font-weight:700;line-height:1.3;box-shadow:0 3px 10px #e6004c40}
 @media(max-width:760px){.discount-badge{left:8px;bottom:8px;padding:3px 7px;font-size:10px}.co-chips{gap:6px}}
+/* উইন্ডোর বন্ধ বাটন সবসময় ওপরে দেখা যাবে */
+.modal-heading{position:sticky;top:0;z-index:8;background:inherit;padding-bottom:10px;margin-bottom:6px}
+.modal-heading .icon-button{flex:none;background:#fff;box-shadow:0 2px 10px #0000001f}
+/* আকর্ষণীয় ব্যাগের পাতা */
+.cart-pro{display:flex;flex-direction:column;gap:14px}
+.cart-pro .free-shipping{padding:12px 14px;border:1px solid #f9d0dc;border-radius:14px;background:#fff7f9}
+.cart-pro .free-shipping p{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:13.5px;font-weight:600;color:#be123c}
+.cart-pro .free-shipping>div{height:9px;border-radius:999px;background:#f6dbe3;overflow:hidden}
+.cart-pro .free-shipping>div span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#ff2d6f,#e6004c);transition:width .4s ease}
+.cart-pro .cart-item{padding:12px;border:1px solid #f3e1e6;border-radius:16px;background:#fff;box-shadow:0 2px 10px #e6004c0d}
+.cart-pro .cart-item img{border-radius:12px}
+.cart-trust{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;font-size:12.5px;color:#78716c}
+.cart-trust span{display:flex;align-items:center;gap:5px}
+.cart-trust svg{color:#e6004c}
