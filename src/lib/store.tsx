@@ -419,7 +419,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       ...s.faqs.filter((f) => f.question !== '__store_contact_settings__'),
       { question: '__store_contact_settings__', answer: JSON.stringify({
         facebookUrl: s.facebookUrl, instagramUrl: s.instagramUrl, whatsappNumber: s.whatsappNumber,
-        bkashNumber: s.bkashNumber, nagadNumber: s.nagadNumber,
+                bkashNumber: s.bkashNumber, nagadNumber: s.nagadNumber, rocketNumber: s.rocketNumber, bankInfo: s.bankInfo,
       }) },
     ];
     if (!(await fetch('/api/settings', { method: 'PUT', headers, body: JSON.stringify({ ...s, faqs }) })).ok)
