@@ -348,13 +348,10 @@ export function Layout() {
           <LayoutGrid size={20} />
           <span>পণ্য</span>
         </NavLink>
-        <button onClick={() => setPanel('cart')} aria-label="মোবাইল ব্যাগ খুলুন">
-          <span className="mobile-nav-bag">
-            <ShoppingBag size={20} />
-            <b>{fmt(bagCount)}</b>
-          </span>
-          <span>ব্যাগ</span>
-        </button>
+                <NavLink to="/shades">
+          <Palette size={20} />
+          <span>শেড</span>
+        </NavLink>
         <button onClick={() => setPanel('orders')} aria-label="মোবাইল অর্ডার ট্র্যাক">
           <Package size={20} />
           <span>ট্র্যাক</span>
