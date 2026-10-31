@@ -30,6 +30,7 @@ import {
   fmt,
   formatDate,
   money,
+    normalizePhone,
   whatsappLink,
   type Order,
   type PaymentMethod,
@@ -268,6 +269,11 @@ function CartDrawer() {
     const address = String(fd.get('address') ?? '').trim();
     if (name.length < 2 || address.length < 8) {
       notify('সম্পূর্ণ নাম ও ঠিকানা দিন।');
+      return;
+    }
+        const phone = normalizePhone(String(fd.get('phone') ?? ''));
+    if (!phone) {
+      notify('সঠিক মোবাইল নম্বর দিন (যেমন 01XXXXXXXXX বা +8801XXXXXXXXX)।');
       return;
     }
     const payLabel = PAYMENT_OPTIONS.find((p) => p.id === payment)?.label || 'ক্যাশ অন ডেলিভারি';
