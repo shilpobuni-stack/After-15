@@ -290,7 +290,7 @@ function CartDrawer() {
       : userNote;
     const customer = {
       name,
-      phone: String(fd.get('phone')),
+            phone,
       address,
       region,
       payment: payLabel,
@@ -396,7 +396,17 @@ function CartDrawer() {
         </div>
       ) : step === 'cart' ? (
         lines.length ? (
-          <div className="cart-content">
+                    <div className="cart-content cart-pro">
+            <div className="co-recap">
+              <div>
+                <small>আপনার ব্যাগ</small>
+                <strong>{fmt(bagCount)}টি পণ্য</strong>
+              </div>
+              <div className="co-recap-total">
+                <small>পণ্যের মোট</small>
+                <strong>{money(subtotal)}</strong>
+              </div>
+            </div>
             {settings.freeThreshold > 0 && (
               <div className="free-shipping">
                 <p>
@@ -449,15 +459,29 @@ function CartDrawer() {
                 </div>
               ))}
             </div>
-            <label className="field">
-              <span>
-                <MapPin size={15} /> ডেলিভারি এলাকা
-              </span>
-              <select value={region} onChange={(e) => setRegion(e.target.value as 'inside' | 'outside')}>
-                <option value="inside">ঢাকার ভিতরে</option>
-                <option value="outside">ঢাকার বাইরে</option>
-              </select>
-            </label>
+                       <div className="co-card">
+              <h3>
+                <MapPin size={17} /> ডেলিভারি কোথায়?
+              </h3>
+              <div className="co-choice-row">
+                <button
+                  type="button"
+                  className={`co-choice ${region === 'inside' ? 'on' : ''}`}
+                  onClick={() => setRegion('inside')}
+                >
+                  <Truck size={20} />
+                  <b>ঢাকার ভিতরে</b>
+                </button>
+                <button
+                  type="button"
+                  className={`co-choice ${region === 'outside' ? 'on' : ''}`}
+                  onClick={() => setRegion('outside')}
+                >
+                  <Truck size={20} />
+                  <b>ঢাকার বাইরে</b>
+                </button>
+              </div>
+            </div>
             {summary}
                         <button
               className="button primary full-width co-submit"
