@@ -16,7 +16,7 @@ export function useAutoScroll<T extends HTMLElement>(count: number, delay = 3500
       if (resumeTimer) clearTimeout(resumeTimer);
       resumeTimer = setTimeout(() => {
         paused = false;
-      }, 4000);
+      }, 2500);
     };
     const tick = () => {
       if (paused || document.hidden) return;
