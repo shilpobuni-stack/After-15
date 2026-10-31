@@ -478,14 +478,6 @@ function CartDrawer() {
           </EmptyState>
         )
       ) : (
-        <form className="checkout-form" onSubmit={onCheckout}>
-          <button type="button" className="back-button" onClick={() => setStep('cart')}>
-            <ArrowLeft size={16} /> ব্যাগে ফিরে যান
-          </button>
-          <div className="notice">
-            <Info size={17} />
-            <span>
-              অর্ডার অনলাইনে সংরক্ষিত হলে সরাসরি মার্চেন্টের কাছে পৌঁছাবে। মূল্য, শেডের স্টক ও
         <form className="checkout-form co-form" onSubmit={onCheckout}>
           <button type="button" className="back-button" onClick={() => setStep('cart')}>
             <ArrowLeft size={16} /> ব্যাগে ফিরে যান
