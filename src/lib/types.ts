@@ -65,6 +65,8 @@ export type Settings = {
   whatsappNumber: string;
   bkashNumber: string;
   nagadNumber: string;
+    rocketNumber: string;
+  bankInfo: string;
   address: string;
   inside: number;
   outside: number;
@@ -93,13 +95,13 @@ export type OrderItem = {
   image?: string;
 };
 
-export type PaymentMethod = 'cod' | 'bkash' | 'nagad' | 'rocket' | 'card';
-
+export type PaymentMethod = 'cod' | 'bkash' | 'nagad' | 'rocket' | 'bank' | 'card';
 export const PAYMENT_OPTIONS: { id: PaymentMethod; label: string }[] = [
   { id: 'cod', label: 'ক্যাশ অন ডেলিভারি' },
   { id: 'bkash', label: 'বিকাশ' },
   { id: 'nagad', label: 'নগদ' },
   { id: 'rocket', label: 'রকেট' },
+    { id: 'bank', label: 'ব্যাংক ট্রান্সফার' },
   { id: 'card', label: 'কার্ড / অন্যান্য (ডেলিভারিতে)' },
 ];
 
