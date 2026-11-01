@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kushi-psi.vercel.app/sitemap.xml
+Sitemap: https://kushishilpo.vercel.app/sitemap.xml
