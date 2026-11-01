@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useStore } from '../lib/store';
+import { Link, useNavigate } from 'react-router-dom';
 import { fmt, money, totalStock, type Product } from '../lib/types';
 
 export function BrandMark({ size = 47 }: { size?: number }) {
@@ -157,24 +158,31 @@ export function Quantity({
 }
 
 export function ProductCard({ product }: { product: Product }) {
-  const { wishlist, toggleWish, setSelectedProduct, addToCart, categories } = useStore();
+  const { wishlist, toggleWish, setPanel, addToCart, categories } = useStore();
+  const navigate = useNavigate();
   const wished = wishlist.includes(product.id);
+  const href = `/product/${encodeURIComponent(product.id)}`;
+  const goto = (shadeId?: string) => {
+    setPanel(null);
+    navigate(shadeId ? `${href}?shade=${encodeURIComponent(shadeId)}` : href);
+  };
   return (
     <article className="product-card">
       <div className="product-photo">
-        <button
+        <Link
           className="product-image-button"
-          onClick={() => setSelectedProduct({ id: product.id })}
+          to={href}
+          onClick={() => setPanel(null)}
           aria-label={`${product.name} বিস্তারিত দেখুন`}
         >
           <img loading="lazy" src={product.image} alt={product.name} />
-        </button>
+        </Link>
         {product.badge && (
           <span className={`product-badge ${product.badge === 'নতুন' ? 'new' : ''}`}>
             {product.badge === 'বেস্টসেলার' && <span>✧</span>} {product.badge}
           </span>
         )}
-                {product.oldPrice > product.price && (
+        {product.oldPrice > product.price && (
           <span className="discount-badge">
             -{Math.round((1 - product.price / product.oldPrice) * 100)}%
           </span>
@@ -186,7 +194,7 @@ export function ProductCard({ product }: { product: Product }) {
         >
           <Heart size={18} fill={wished ? 'currentColor' : 'none'} />
         </button>
-        <button className="quick-view" onClick={() => setSelectedProduct({ id: product.id })}>
+        <button className="quick-view" onClick={() => goto()}>
           একটু দেখে নিন <ArrowRight size={15} />
         </button>
       </div>
@@ -194,9 +202,9 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="product-meta">
           <span>{categories.find((c) => c.id === product.category)?.name}</span>
         </div>
-        <button className="product-title" onClick={() => setSelectedProduct({ id: product.id })}>
+        <Link className="product-title" to={href} onClick={() => setPanel(null)}>
           {product.name}
-        </button>
+        </Link>
         {product.shades.length ? (
           <div className="card-shades">
             {product.shades.slice(0, 5).map((s) => (
@@ -206,12 +214,12 @@ export function ProductCard({ product }: { product: Product }) {
                 style={product.variantLabel === 'সাইজ' ? { width: 'auto', minWidth: 36, padding: '3px 7px', borderRadius: 999, background: '#fff1f2', color: '#9f1239', fontSize: 11, border: '1px solid #fecdd3' } : { background: s.color }}
                 title={`${s.name} · ${s.code}`}
                 aria-label={`${s.name} ${product.variantLabel === 'সাইজ' ? 'সাইজ' : 'শেড'} দেখুন`}
-                onClick={() => setSelectedProduct({ id: product.id, shadeId: s.id })}
+                onClick={() => goto(s.id)}
               >
                 {product.variantLabel === 'সাইজ' ? s.name : s.image && <img src={s.image} alt="" loading="lazy" />}
               </button>
             ))}
-            <button className="more-shades" onClick={() => setSelectedProduct({ id: product.id })}>
+            <button className="more-shades" onClick={() => goto()}>
               {product.shades.length > 5 ? `+${fmt(product.shades.length - 5)}` : fmt(product.shades.length)} {product.variantLabel === 'সাইজ' ? 'সাইজ' : 'শেড'}
             </button>
           </div>
@@ -229,7 +237,7 @@ export function ProductCard({ product }: { product: Product }) {
             className="mini-cart"
             disabled={totalStock(product) === 0}
             aria-label={`${product.name} ${product.shades.length ? `${product.variantLabel === 'সাইজ' ? 'সাইজ' : 'শেড'} বাছুন` : 'ব্যাগে যোগ করুন'}`}
-            onClick={() => (product.shades.length ? setSelectedProduct({ id: product.id }) : addToCart(product, '', 1))}
+            onClick={() => (product.shades.length ? goto() : addToCart(product, '', 1))}
           >
             <ShoppingBag size={17} />
             <span>{product.shades.length ? `${product.variantLabel === 'সাইজ' ? 'সাইজ' : 'শেড'} বেছে কিনুন` : 'ব্যাগে যোগ করুন'}</span>
@@ -239,7 +247,7 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
     </article>
   );
-}
+        }
 
 export function EmptyState({
   title,
