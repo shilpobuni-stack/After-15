@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   Check,
@@ -188,7 +188,8 @@ export default function Shop() {
 }
 
 export function ShadesPage() {
-  const { products, setSelectedProduct } = useStore();
+    const { products } = useStore();
+  const navigate = useNavigate();
   const yarnProducts = products.filter((p) => p.active && p.shades.length && p.variantLabel !== 'সাইজ');
   const [selectedId, setSelectedId] = useState('');
   const selected = yarnProducts.find((p) => p.id === selectedId) || yarnProducts[0];
@@ -284,7 +285,7 @@ export function ShadesPage() {
               <button
                 key={s.id}
                 className="shade-library-card"
-                onClick={() => setSelectedProduct({ id: selected.id, shadeId: s.id })}
+                                onClick={() => navigate(`/product/${encodeURIComponent(selected.id)}?shade=${encodeURIComponent(s.id)}`)}
               >
                 <div className="shade-big-swatch" style={{ background: s.color }}>
                   {s.image ? (
