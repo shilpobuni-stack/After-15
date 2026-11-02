@@ -66,4 +66,5 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error('products API error:', err);
         res.status(500).json({ error: 'সার্ভারে সমস্যা হয়েছে। আবার চেষ্টা করুন।' });
-}
+  }
+        }
