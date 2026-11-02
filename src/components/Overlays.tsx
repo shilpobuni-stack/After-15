@@ -23,6 +23,7 @@ import {
   X,
 } from 'lucide-react';
 import { useStore } from '../lib/store';
+import { track } from '../lib/analytics';
 import {
   PAYMENT_OPTIONS,
   STORE_PHONE,
@@ -325,6 +326,11 @@ function CartDrawer() {
         }
       }
       const order = await placeOrder(customer, requestRef.current.id, subtotal - discount + delivery, coupon?.code);
+            track('Purchase', {
+        orderId: order.id,
+        value: order.total,
+        items: order.items.map((i) => ({ id: i.productId || '', name: i.name, price: i.price, quantity: i.quantity })),
+      });
       try {
         sessionStorage.removeItem('kushi-checkout-request');
       } catch {
@@ -492,7 +498,13 @@ function CartDrawer() {
                         <button
               className="button primary full-width co-submit"
               disabled={stockIssue}
-              onClick={() => setStep('checkout')}
+                            onClick={() => {
+                track('InitiateCheckout', {
+                  value: subtotal - discount + delivery,
+                  items: lines.map((l) => ({ id: l.product.id, name: l.product.name, price: l.product.price, quantity: l.quantity })),
+                });
+                setStep('checkout');
+              }}
             >
               অর্ডার করুন · {money(subtotal - discount + delivery)} <ArrowRight size={17} />
             </button>
