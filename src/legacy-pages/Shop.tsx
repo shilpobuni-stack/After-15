@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
@@ -23,6 +23,10 @@ export default function Shop() {
   const [inStock, setInStock] = useState(false);
   const [sort, setSort] = useState('popular');
   const [search, setSearch] = useState(q);
+    const [visible, setVisible] = useState(12);
+  useEffect(() => {
+    setVisible(12);
+  }, [category, q, search, maxPrice, inStock, sort, isNew]);
 
   const setParam = (key: string, value: string) => {
     const next = new URLSearchParams(params);
@@ -51,6 +55,7 @@ export default function Shop() {
     if (sort === 'price-asc') list = [...list].sort((a, b) => a.price - b.price);
     else if (sort === 'price-desc') list = [...list].sort((a, b) => b.price - a.price);
     else if (sort === 'name') list = [...list].sort((a, b) => a.name.localeCompare(b.name, 'bn'));
+        else list = [...list].sort((a, b) => Number(b.featured) - Number(a.featured) || Number(b.badge === 'বেস্টসেলার') - Number(a.badge === 'বেস্টসেলার'));
     return list;
   }, [products, category, q, search, maxPrice, inStock, sort, isNew]);
 
@@ -167,9 +172,16 @@ export default function Shop() {
           </div>
           {filtered.length ? (
             <div className="product-grid shop-product-grid">
-              {filtered.map((p) => (
+                            {filtered.slice(0, visible).map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
+                            {filtered.length > visible && (
+                <div style={{ gridColumn: '1 / -1', textAlign: 'center' }}>
+                  <button className="button secondary" onClick={() => setVisible(visible + 12)}>
+                    আরও পণ্য দেখুন ({fmt(filtered.length - visible)}টি বাকি)
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <EmptyState
