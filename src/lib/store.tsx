@@ -331,9 +331,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setOrders((prev) =>
         prev.map((o) => (o.id === order.id ? { ...o, status, adminNote: note } : o))
       );
+            if (status === 'বাতিল' || order.status === 'বাতিল') await refreshCatalog();
       notify('অর্ডার অনলাইনে আপডেট হয়েছে।');
     },
-    [notify]
+    [notify, refreshCatalog]
   );
 
   const saveProduct = useCallback(
