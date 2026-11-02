@@ -81,6 +81,41 @@ function genOrderId() {
   return `KS-${t}-${r}`;
 }
 
+const CANCELLED = 'বাতিল';
+
+async function adjustStock(items, direction) {
+  const lines = (Array.isArray(items) ? items : []).filter((item) => item && item.productId);
+  if (!lines.length) return { ok: true };
+  const ids = [...new Set(lines.map((item) => item.productId))];
+  const { data: rows, error } = await supabase.from('products').select('id,name,stock,shades').in('id', ids);
+  if (error) throw error;
+  const byId = Object.fromEntries((rows || []).map((row) => [row.id, {
+    ...row,
+    shades: Array.isArray(row.shades) ? row.shades.map((s) => ({ ...s })) : [],
+  }]));
+  for (const line of lines) {
+    const row = byId[line.productId];
+    if (!row) continue;
+    const qty = Number(line.quantity || 0);
+    if (!Number.isSafeInteger(qty) || qty < 1) continue;
+    const shade = line.shadeId ? row.shades.find((s) => s.id === line.shadeId) : null;
+    if (shade) {
+      const next = Number(shade.stock || 0) + direction * qty;
+      if (next < 0) return { ok: false, error: `${row.name} · ${shade.name} যথেষ্ট স্টকে নেই — অর্ডারটি আবার চালু করা যাচ্ছে না।` };
+      shade.stock = next;
+    } else if (!row.shades.length) {
+      const next = Number(row.stock || 0) + direction * qty;
+      if (next < 0) return { ok: false, error: `${row.name} যথেষ্ট স্টকে নেই — অর্ডারটি আবার চালু করা যাচ্ছে না।` };
+      row.stock = next;
+    }
+  }
+  for (const row of Object.values(byId)) {
+    const update = row.shades.length ? { shades: row.shades } : { stock: row.stock };
+    const { error: updateError } = await supabase.from('products').update(update).eq('id', row.id);
+    if (updateError) throw updateError;
+  }
+  return { ok: true };
+      }
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
@@ -134,6 +169,12 @@ export default async function handler(req, res) {
         }
       }
 
+            {
+        const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+        const { count: recentCount, error: recentError } = await supabase.from('orders').select('id', { count: 'exact', head: true }).eq('phone', customer.phone).gte('created_at', since);
+        if (recentError) throw recentError;
+        if ((recentCount || 0) >= 5) return res.status(429).json({ error: 'এই নম্বর থেকে অনেক অর্ডার এসেছে। কিছুক্ষণ পরে চেষ্টা করুন অথবা WhatsApp-এ যোগাযোগ করুন।' });
+      }
       const [{ data: products, error: productError }, { data: settingsRow, error: settingsError }] = await Promise.all([
         supabase.from('products').select('*'),
         supabase.from('settings').select('*').eq('id', 'main').maybeSingle(),
