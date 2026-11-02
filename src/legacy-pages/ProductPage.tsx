@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowRight, ChevronRight, Copy, Heart, Package, Search } from 'lucide-react';
 import { useStore } from '../lib/store';
+import { track } from '../lib/analytics';
 import { EmptyState, ProductCard, Quantity } from '../components/UI';
 import { fmt, money, type Product } from '../lib/types';
 
@@ -70,6 +71,9 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
       document.title = previous;
     };
   }, [product.name]);
+    useEffect(() => {
+    track('ViewContent', { id: product.id, name: product.name, price: product.price });
+  }, [product.id]);
 
   async function copyLink() {
     try {
@@ -128,7 +132,7 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
           <p className="detail-description">{product.description}</p>
           <div className="detail-weight">
             <span className={stock > 0 ? 'in-stock' : 'out-of-stock'}>
-              {stock > 0 ? `${fmt(stock)}টি স্টকে আছে` : 'স্টকে নেই'}
+                            {stock > 0 ? (stock <= 5 ? `মাত্র ${fmt(stock)}টি বাকি আছে!` : `${fmt(stock)}টি স্টকে আছে`) : 'স্টকে নেই'}
             </span>
           </div>
 
