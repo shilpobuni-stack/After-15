@@ -23,6 +23,7 @@ import {
   type SelectedProduct,
   type Settings,
 } from './types';
+import { track } from './analytics';
 
 function useLocalStorage<T>(key: string, initial: T) {
   const [value, setValue] = useState<T>(initial);
@@ -146,7 +147,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         fetch('/api/categories').then((r) => (r.ok ? r.json() : null)),
         fetch('/api/settings').then((r) => (r.ok ? r.json() : null)),
       ]);
-      if (Array.isArray(pRes) && pRes.length) setProducts(pRes.map(mapProduct));
+       if (Array.isArray(pRes) && pRes.length) {
+        setProducts(pRes.map(mapProduct));
+        const liveIds = new Set(pRes.map((p: { id: unknown }) => String(p.id)));
+        setCart((prev) => (prev.some((c) => !liveIds.has(c.productId)) ? prev.filter((c) => liveIds.has(c.productId)) : prev));
+                                                                     }
       if (Array.isArray(cRes) && cRes.length) setCategories(cRes);
       if (sRes && typeof sRes === 'object') {
         setSettings((prev) => ({ ...prev, ...sRes, ...mapSettings(sRes) }));
@@ -155,7 +160,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     } catch {
       /* keep defaults */
     }
-  }, []);
+    }, [setCart]);
 
   useEffect(() => {
     refreshCatalog();
@@ -273,6 +278,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       });
       setTimeout(() => {
         notify(ok ? 'ব্যাগে যোগ করা হয়েছে।' : 'এই পরিমাণ পণ্য স্টকে নেই। কম পরিমাণ বেছে নিন।');
+                if (ok) track('AddToCart', { id: product.id, name: product.name, price: product.price, quantity: qty });
       }, 0);
       return ok;
     },
