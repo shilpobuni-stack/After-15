@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import '../index.css';
 import '../extra.css';
+import Analytics from '../components/Analytics';
+import AnalyticsScripts from '../components/AnalyticsScripts';
 const origin = (process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')).replace(/\/$/, '');
 export const metadata: Metadata = {
   metadataBase: new URL(origin),
