@@ -50,6 +50,7 @@ import {
   uid,
   uploadImage,
   weightLabel,
+    whatsappLink,
   type Category,
   type Order,
   type Product,
@@ -1415,7 +1416,7 @@ function OrdersAdmin() {
           </div>
         )}
       </div>
-      <p className="admin-fineprint">অর্ডার বাতিল করলে স্টক স্বয়ংক্রিয়ভাবে ফেরত যোগ হয় না — প্রয়োজনে ম্যানুয়ালি আপডেট করুন।</p>
+            <p className="admin-fineprint">অর্ডার বাতিল করলে পণ্যের স্টক স্বয়ংক্রিয়ভাবে ফেরত যোগ হয়। বাতিল অর্ডার আবার চালু করলে স্টক আবার কমে যায়।</p>
       {error && <p className="cloud-error">{error}</p>}
       {selected && (
         <Modal title="অর্ডার বিস্তারিত" onClose={() => setSelected(null)} className="order-modal">
@@ -1515,6 +1516,15 @@ function OrdersAdmin() {
           <button className="button secondary full-width" onClick={() => downloadReceipt(selected, settings.phone)}>
             <Download size={16} /> ছবি ও সব তথ্যসহ অর্ডার রসিদ
           </button>
+                    <a
+            className="button secondary full-width"
+            style={{ marginTop: 10 }}
+            href={whatsappLink(`আসসালামু আলাইকুম ${selected.name}, ${settings.name} থেকে আপনার অর্ডার ${selected.id} এখন "${selected.status}" অবস্থায় আছে। মোট ${money(selected.total)}। ধন্যবাদ!`, selected.phone)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Phone size={16} /> কাস্টমারকে WhatsApp-এ জানান
+          </a>
         </Modal>
       )}
     </>
