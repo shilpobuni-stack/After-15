@@ -296,8 +296,20 @@ export default async function handler(req, res) {
       if (status !== undefined) updates.status = String(status).slice(0, 80);
       if (note !== undefined) updates.admin_note = String(note).slice(0, 2000);
       if (!Object.keys(updates).length) return res.status(400).json({ error: 'আপডেট করার তথ্য প্রয়োজন' });
+            const { data: current, error: currentError } = await supabase.from('orders').select('status,items').eq('id', id).maybeSingle();
+      if (currentError) throw currentError;
+      if (!current) return res.status(404).json({ error: 'অর্ডারটি পাওয়া যায়নি' });
+      const stockChanges = updates.status !== undefined && (current.status === CANCELLED) !== (updates.status === CANCELLED);
+      const direction = updates.status === CANCELLED ? 1 : -1;
+      if (stockChanges) {
+        const result = await adjustStock(current.items, direction);
+        if (!result.ok) return res.status(400).json({ error: result.error });
+      }
       const { data, error } = await supabase.from('orders').update(updates).eq('id', id).select().single();
-      if (error) throw error;
+      if (error) {
+        if (stockChanges) await adjustStock(current.items, -direction).catch(() => {});
+        throw error;
+      }
       return res.status(200).json(mapOrder(data));
     }
 
