@@ -600,13 +600,19 @@ function CartDrawer() {
               </button>
               <button
                 type="button"
-                className={`co-choice ${region === 'outside' ? 'on' : ''}`}
+                                className={`co-choice ${effectiveRegion === 'outside' ? 'on' : ''}`}
                 onClick={() => setRegion('outside')}
               >
                 <Truck size={20} />
-                <b>ঢাকার বাইরে</b>
+                <b>ঢাকা সিটির বাইরে</b>
               </button>
             </div>
+                        {addressOutside && (
+              <p className="co-region-note">
+                আপনার ঠিকানা ঢাকা সিটির বাইরে মনে হচ্ছে, তাই ঢাকা সিটির বাইরের ডেলিভারি চার্জ ধরা হয়েছে। ভুল হলে ঠিকানা ঠিক করে নিন অথবা WhatsApp-এ জানান।
+              </p>
+            )}
+            <p className="co-region-hint">ঢাকা সিটি বলতে ঢাকা উত্তর ও দক্ষিণ সিটি কর্পোরেশন এলাকা।</p>
           </section>
 
           <section className="co-card">
@@ -926,7 +932,7 @@ function InfoModal({ privacy = false }: { privacy?: boolean }) {
           <div className="notice">
             <Truck size={17} />
             <span>
-              ঢাকায় {money(settings.inside)} থেকে, ঢাকার বাইরে {money(settings.outside)} থেকে ডেলিভারি।
+                            ঢাকা সিটিতে {money(settings.inside)} থেকে, ঢাকা সিটির বাইরে {money(settings.outside)} থেকে ডেলিভারি।
               যোগাযোগ: {settings.phone}
             </span>
           </div>
