@@ -1443,7 +1443,7 @@ function OrdersAdmin() {
                 <MapPin size={14} /> ডেলিভারির ঠিকানা
               </h3>
               <p>{selected.address}</p>
-              <small>{selected.region === 'inside' ? 'ঢাকার ভিতরে' : 'ঢাকার বাইরে'}</small>
+              <small>{selected.region === 'inside' ? 'ঢাকা সিটির ভিতরে' : 'ঢাকা সিটির বাইরে'}</small>
             </section>
           </div>
           <div className="order-lines-heading">
@@ -1571,14 +1571,14 @@ function DeliveryAdmin() {
             </div>
             <p className="muted">নির্ধারিত বেস ওজন পর্যন্ত এই চার্জ প্রযোজ্য।</p>
             <div className="form-grid" style={{ marginTop: 14 }}>
-              <Field label="ঢাকার ভিতরে (৳)">
+              <Field label="ঢাকা সিটির ভিতরে (৳)">
                 <input
                   type="number"
                   value={form.inside}
                   onChange={(e) => setForm({ ...form, inside: Number(e.target.value) })}
                 />
               </Field>
-              <Field label="ঢাকার বাইরে (৳)">
+              <Field label="ঢাকা সিটির বাইরে (৳)">
                 <input
                   type="number"
                   value={form.outside}
@@ -1656,8 +1656,8 @@ function DeliveryAdmin() {
           </Field>
           <Field label="ডেলিভারি এলাকা">
             <select value={demoRegion} onChange={(e) => setDemoRegion(e.target.value as 'inside' | 'outside')}>
-              <option value="inside">ঢাকার ভিতরে</option>
-              <option value="outside">ঢাকার বাইরে</option>
+              <option value="inside">ঢাকা সিটির ভিতরে</option>
+              <option value="outside">ঢাকা সিটির বাইরে</option>
             </select>
           </Field>
           <Field label="অর্ডার মূল্য (৳)">
