@@ -221,3 +221,4 @@ body:has(.pp-sticky) .help-dial{bottom:calc(150px + env(safe-area-inset-bottom,0
 }
 .co-region-note{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;font-size:13px;line-height:1.6}
 .co-region-hint{margin:8px 0 0;color:#78716c;font-size:12px}
+.dial-call b{background:#0ea5e9}
