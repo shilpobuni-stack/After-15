@@ -486,7 +486,7 @@ function CartDrawer() {
                   onClick={() => setRegion('inside')}
                 >
                   <Truck size={20} />
-                  <b>ঢাকা সিটির বাইরে</b>
+                                  <b>ঢাকা সিটির ভিতরে</b>
                 </button>
                 <button
                   type="button"
