@@ -1,6 +1,7 @@
 import supabase from './db-client.js';
 import { requireMerchant } from './_auth.js';
 import { createOrderAccessToken, mapTrackingOrder, verifyOrderAccessToken } from './_order-access.js';
+import { isOutsideDhakaCity } from '../../lib/dhaka-zone.js';
 
 function calcDelivery(settings, weight, region, subtotal) {
   if (Number(settings.free_threshold ?? 2000) > 0 && subtotal >= Number(settings.free_threshold ?? 2000)) return 0;
@@ -221,9 +222,8 @@ export default async function handler(req, res) {
         reservations.push({ product, shade, quantity, stock });
       }
 
-      const region = customer.region === 'outside' ? 'outside' : 'inside';
       const delivery = calcDelivery(settings, weight, region, subtotal);
-      const discount = coupon ? Math.round(subtotal * Number(coupon.discount_percent) / 100) : 0;
+            const region = customer.region === 'outside' || isOutsideDhakaCity(customer.address) ? 'outside' : 'inside';
       const total = subtotal - discount + delivery;
       if (!Number.isFinite(expectedTotal) || Math.abs(expectedTotal - total) > 1) return res.status(400).json({ error: 'মোট মূল্যে পরিবর্তন হয়েছে। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।' });
 
