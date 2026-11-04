@@ -329,14 +329,6 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
             >
               <Zap size={18} /> এখনই কিনুন
             </button>
-            <button
-              type="button"
-              className="button pp-btn-wa"
-              disabled={!canBuy}
-              onClick={orderOnWhatsApp}
-            >
-              <MessageCircle size={18} /> WhatsApp-এ অর্ডার করুন
-            </button>
           </div>
 
           <div className="pp-trust">
