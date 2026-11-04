@@ -150,16 +150,6 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
     );
   }
 
-  function orderOnWhatsApp() {
-    const variant = shade ? `\n${isSize ? 'সাইজ' : 'শেড'}: ${shade.name} · ${shade.code}` : '';
-    const message = `আসসালামু আলাইকুম, আমি এই পণ্যটি অর্ডার করতে চাই:\n${product.name}${variant}\nপরিমাণ: ${qty}\nমূল্য: ${money(product.price * qty)}\n${productUrl()}`;
-    window.open(
-      whatsappLink(message, settings.whatsappNumber || settings.phone),
-      '_blank',
-      'noopener,noreferrer'
-    );
-  }
-
   function add(openBag: boolean) {
     if (addToCart(product, product.shades.length ? shadeId : '', qty)) {
       setQty(1);
