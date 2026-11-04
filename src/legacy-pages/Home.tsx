@@ -164,7 +164,7 @@ export default function Home() {
             <MapPin size={21} />
             <span>
               <strong>দেশজুড়ে ডেলিভারি</strong>
-              <small>ঢাকায় {money(settings.inside)} থেকে</small>
+              <small>ঢাকা সিটিতে {money(settings.inside)} থেকে</small>
             </span>
           </div>
           <div>
@@ -312,7 +312,7 @@ export default function Home() {
           <div>
             <h3>আপনার সৃষ্টির উপকরণ, পৌঁছে যাবে আপনার কাছে।</h3>
             <p>
-              ঢাকায় {money(settings.inside)}, ঢাকার বাইরে {money(settings.outside)} থেকে।{' '}
+              ঢাকা সিটিতে {money(settings.inside)}, ঢাকা সিটির বাইরে {money(settings.outside)} থেকে।{' '}
               ডেলিভারি চার্জ চেকআউটে স্বয়ংক্রিয়ভাবে যোগ হবে।
             </p>
           </div>
