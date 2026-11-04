@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../lib/store';
 import { track } from '../lib/analytics';
+import { isOutsideDhakaCity } from '../lib/dhaka-zone.js';
 import {
   PAYMENT_OPTIONS,
   STORE_PHONE,
@@ -169,6 +170,9 @@ function CartDrawer() {
   const { cart, setCart, products, settings, setPanel, placeOrder, notify } = useStore();
   const [step, setStep] = useState<'cart' | 'checkout' | 'done'>('cart');
   const [region, setRegion] = useState<'inside' | 'outside'>('inside');
+    const [address, setAddress] = useState('');
+  const addressOutside = region === 'inside' && isOutsideDhakaCity(address);
+  const effectiveRegion: 'inside' | 'outside' = addressOutside ? 'outside' : region;
   const [payment, setPayment] = useState<PaymentMethod>('cod');
   const [trxId, setTrxId] = useState('');
   const [couponInput, setCouponInput] = useState('');
@@ -226,7 +230,7 @@ function CartDrawer() {
   const delivery = lines.length
     ? freeLimit > 0 && subtotal >= freeLimit
       ? 0
-      : Number(settings[region] ?? (region === 'outside' ? 130 : 80)) + extraSteps * Number(settings.extraCharge ?? 20)
+            : Number(settings[effectiveRegion] ?? (effectiveRegion === 'outside' ? 130 : 80)) + extraSteps * Number(settings.extraCharge ?? 20)
     : 0;
   const discount = coupon ? Math.round(subtotal * coupon.percent / 100) : 0;
   const stockIssue = lines.some((l) => !l.product.active || l.quantity > l.stock);
