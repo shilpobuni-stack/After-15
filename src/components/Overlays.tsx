@@ -406,6 +406,14 @@ function CartDrawer() {
           <button className="button primary full-width" onClick={() => downloadReceipt(doneOrder, settings.phone)}>
             <Download size={17} /> রশিদ ডাউনলোড করুন
           </button>
+                    <a
+            className="button secondary full-width"
+            target="_blank"
+            rel="noopener noreferrer"
+            href={whatsappLink(`আসসালামু আলাইকুম, আমি অনলাইনে অর্ডার দিয়েছি।\nঅর্ডার নম্বর: ${doneOrder.id}\nনাম: ${doneOrder.name}\nমোট: ${money(doneOrder.total)}\nপেমেন্ট: ${doneOrder.payment || 'ক্যাশ অন ডেলিভারি'}`, settings.whatsappNumber || settings.phone)}
+          >
+            <MessageCircle size={17} /> WhatsApp-এ জানিয়ে রাখুন
+          </a>
           <button className="button secondary full-width" onClick={() => setPanel('orders')}>
             আমার অর্ডার দেখুন <ArrowRight size={17} />
           </button>
@@ -557,7 +565,7 @@ function CartDrawer() {
               <span>আপনার নাম</span>
               <div className="co-input">
                 <User size={18} />
-                <input name="name" required minLength={2} maxLength={120} placeholder="সম্পূর্ণ নাম লিখুন" autoComplete="name" />
+                                <input name="name" defaultValue={saved.name} required minLength={2} maxLength={120} placeholder="সম্পূর্ণ নাম লিখুন" autoComplete="name" />
               </div>
             </label>
             <label className="co-field">
@@ -566,6 +574,7 @@ function CartDrawer() {
                 <Phone size={18} />
                 <input
                   name="phone"
+                                    defaultValue={saved.phone}
                   type="tel"
                                     inputMode="tel"
                   required
@@ -589,6 +598,7 @@ function CartDrawer() {
                 />
               </div>
             </label>
+                        {saved.name && <p className="co-region-hint">✓ আগের অর্ডারের তথ্য বসানো হয়েছে, দরকার হলে বদলে নিন।</p>}
           </section>
 
           <section className="co-card">
