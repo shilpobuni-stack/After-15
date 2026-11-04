@@ -18,7 +18,7 @@ import {
 import { useStore } from '../lib/store';
 import { track } from '../lib/analytics';
 import { EmptyState, ProductCard, Quantity } from '../components/UI';
-import { fmt, money, whatsappLink, type Product } from '../lib/types';
+import { fmt, money, type Product } from '../lib/types';
 
 export default function ProductPage({ id }: { id: string }) {
   const { products, cloud } = useStore();
