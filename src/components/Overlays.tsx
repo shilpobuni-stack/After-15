@@ -299,7 +299,7 @@ function CartDrawer() {
       name,
             phone,
       address,
-      region,
+            region: effectiveRegion,
       payment: payLabel,
       note: noteWithTrx,
     };
@@ -482,7 +482,7 @@ function CartDrawer() {
                   onClick={() => setRegion('inside')}
                 >
                   <Truck size={20} />
-                  <b>ঢাকার ভিতরে</b>
+                  <b>ঢাকা সিটির বাইরে</b>
                 </button>
                 <button
                   type="button"
@@ -490,7 +490,7 @@ function CartDrawer() {
                   onClick={() => setRegion('outside')}
                 >
                   <Truck size={20} />
-                  <b>ঢাকার বাইরে</b>
+                  <b>ঢাকা সিটির বাইরে</b>
                 </button>
               </div>
             </div>
@@ -576,6 +576,8 @@ function CartDrawer() {
                 <MapPin size={18} />
                 <input
                   name="address"
+                                    value={address}
+                  onChange={(e) => setAddress(e.target.value)}
                   required
                   minLength={8}
                   placeholder="বাসা, রাস্তা, এলাকা, থানা ও জেলা"
@@ -592,11 +594,11 @@ function CartDrawer() {
             <div className="co-choice-row">
               <button
                 type="button"
-                className={`co-choice ${region === 'inside' ? 'on' : ''}`}
+                                className={`co-choice ${effectiveRegion === 'inside' ? 'on' : ''}`}
                 onClick={() => setRegion('inside')}
               >
                 <Truck size={20} />
-                <b>ঢাকার ভিতরে</b>
+                <b>ঢাকা সিটির ভিতরে</b>
               </button>
               <button
                 type="button"
