@@ -50,6 +50,7 @@ import {
   uid,
   uploadImage,
   weightLabel,
+    whatsappLink,
   type Category,
   type Order,
   type Product,
@@ -1415,7 +1416,7 @@ function OrdersAdmin() {
           </div>
         )}
       </div>
-      <p className="admin-fineprint">অর্ডার বাতিল করলে স্টক স্বয়ংক্রিয়ভাবে ফেরত যোগ হয় না — প্রয়োজনে ম্যানুয়ালি আপডেট করুন।</p>
+            <p className="admin-fineprint">অর্ডার বাতিল করলে পণ্যের স্টক স্বয়ংক্রিয়ভাবে ফেরত যোগ হয়। বাতিল অর্ডার আবার চালু করলে স্টক আবার কমে যায়।</p>
       {error && <p className="cloud-error">{error}</p>}
       {selected && (
         <Modal title="অর্ডার বিস্তারিত" onClose={() => setSelected(null)} className="order-modal">
@@ -1442,7 +1443,7 @@ function OrdersAdmin() {
                 <MapPin size={14} /> ডেলিভারির ঠিকানা
               </h3>
               <p>{selected.address}</p>
-              <small>{selected.region === 'inside' ? 'ঢাকার ভিতরে' : 'ঢাকার বাইরে'}</small>
+              <small>{selected.region === 'inside' ? 'ঢাকা সিটির ভিতরে' : 'ঢাকা সিটির বাইরে'}</small>
             </section>
           </div>
           <div className="order-lines-heading">
@@ -1515,6 +1516,15 @@ function OrdersAdmin() {
           <button className="button secondary full-width" onClick={() => downloadReceipt(selected, settings.phone)}>
             <Download size={16} /> ছবি ও সব তথ্যসহ অর্ডার রসিদ
           </button>
+                    <a
+            className="button secondary full-width"
+            style={{ marginTop: 10 }}
+            href={whatsappLink(`আসসালামু আলাইকুম ${selected.name}, ${settings.name} থেকে আপনার অর্ডার ${selected.id} এখন "${selected.status}" অবস্থায় আছে। মোট ${money(selected.total)}। ধন্যবাদ!`, selected.phone)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Phone size={16} /> কাস্টমারকে WhatsApp-এ জানান
+          </a>
         </Modal>
       )}
     </>
@@ -1561,14 +1571,14 @@ function DeliveryAdmin() {
             </div>
             <p className="muted">নির্ধারিত বেস ওজন পর্যন্ত এই চার্জ প্রযোজ্য।</p>
             <div className="form-grid" style={{ marginTop: 14 }}>
-              <Field label="ঢাকার ভিতরে (৳)">
+              <Field label="ঢাকা সিটির ভিতরে (৳)">
                 <input
                   type="number"
                   value={form.inside}
                   onChange={(e) => setForm({ ...form, inside: Number(e.target.value) })}
                 />
               </Field>
-              <Field label="ঢাকার বাইরে (৳)">
+              <Field label="ঢাকা সিটির বাইরে (৳)">
                 <input
                   type="number"
                   value={form.outside}
@@ -1646,8 +1656,8 @@ function DeliveryAdmin() {
           </Field>
           <Field label="ডেলিভারি এলাকা">
             <select value={demoRegion} onChange={(e) => setDemoRegion(e.target.value as 'inside' | 'outside')}>
-              <option value="inside">ঢাকার ভিতরে</option>
-              <option value="outside">ঢাকার বাইরে</option>
+              <option value="inside">ঢাকা সিটির ভিতরে</option>
+              <option value="outside">ঢাকা সিটির বাইরে</option>
             </select>
           </Field>
           <Field label="অর্ডার মূল্য (৳)">
@@ -1865,6 +1875,12 @@ function AppearanceAdmin({ kind }: { kind: 'appearance' | 'content' }) {
                 </Field>
                 <Field label="নগদ নম্বর">
                   <input value={form.nagadNumber} onChange={(e) => set('nagadNumber', e.target.value)} placeholder="01XXXXXXXXX" />
+                </Field>
+                                <Field label="রকেট নম্বর">
+                  <input value={form.rocketNumber} onChange={(e) => set('rocketNumber', e.target.value)} placeholder="01XXXXXXXXX" />
+                </Field>
+                <Field label="ব্যাংক অ্যাকাউন্টের তথ্য">
+                  <textarea value={form.bankInfo} onChange={(e) => set('bankInfo', e.target.value)} rows={3} placeholder={'ব্যাংকের নাম:\nঅ্যাকাউন্টের নাম:\nঅ্যাকাউন্ট নম্বর:\nশাখা:'} />
                 </Field>
               </div>
             </section>

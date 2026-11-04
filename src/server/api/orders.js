@@ -1,6 +1,7 @@
 import supabase from './db-client.js';
 import { requireMerchant } from './_auth.js';
 import { createOrderAccessToken, mapTrackingOrder, verifyOrderAccessToken } from './_order-access.js';
+import { isOutsideDhakaCity } from '../../lib/dhaka-zone.js';
 
 function calcDelivery(settings, weight, region, subtotal) {
   if (Number(settings.free_threshold ?? 2000) > 0 && subtotal >= Number(settings.free_threshold ?? 2000)) return 0;
@@ -41,9 +42,12 @@ function genericNotFound(res) {
 
 function normalizePhone(value) {
   const digits = String(value || '').replace(/\D/g, '');
-  const phone = digits.startsWith('880') && digits.length === 13 ? `0${digits.slice(3)}` : digits;
+  let phone = digits;
+  if (digits.startsWith('00880') && digits.length === 15) phone = `0${digits.slice(5)}`;
+  else if (digits.startsWith('880') && digits.length === 13) phone = `0${digits.slice(3)}`;
+  else if (digits.length === 10 && digits.startsWith('1')) phone = `0${digits}`;
   return /^01[3-9][0-9]{8}$/.test(phone) ? phone : '';
-}
+    }
 
 function parseOrderId(value) {
   const id = String(value || '').trim().toUpperCase();
@@ -78,6 +82,41 @@ function genOrderId() {
   return `KS-${t}-${r}`;
 }
 
+const CANCELLED = 'বাতিল';
+
+async function adjustStock(items, direction) {
+  const lines = (Array.isArray(items) ? items : []).filter((item) => item && item.productId);
+  if (!lines.length) return { ok: true };
+  const ids = [...new Set(lines.map((item) => item.productId))];
+  const { data: rows, error } = await supabase.from('products').select('id,name,stock,shades').in('id', ids);
+  if (error) throw error;
+  const byId = Object.fromEntries((rows || []).map((row) => [row.id, {
+    ...row,
+    shades: Array.isArray(row.shades) ? row.shades.map((s) => ({ ...s })) : [],
+  }]));
+  for (const line of lines) {
+    const row = byId[line.productId];
+    if (!row) continue;
+    const qty = Number(line.quantity || 0);
+    if (!Number.isSafeInteger(qty) || qty < 1) continue;
+    const shade = line.shadeId ? row.shades.find((s) => s.id === line.shadeId) : null;
+    if (shade) {
+      const next = Number(shade.stock || 0) + direction * qty;
+      if (next < 0) return { ok: false, error: `${row.name} · ${shade.name} যথেষ্ট স্টকে নেই — অর্ডারটি আবার চালু করা যাচ্ছে না।` };
+      shade.stock = next;
+    } else if (!row.shades.length) {
+      const next = Number(row.stock || 0) + direction * qty;
+      if (next < 0) return { ok: false, error: `${row.name} যথেষ্ট স্টকে নেই — অর্ডারটি আবার চালু করা যাচ্ছে না।` };
+      row.stock = next;
+    }
+  }
+  for (const row of Object.values(byId)) {
+    const update = row.shades.length ? { shades: row.shades } : { stock: row.stock };
+    const { error: updateError } = await supabase.from('products').update(update).eq('id', row.id);
+    if (updateError) throw updateError;
+  }
+  return { ok: true };
+      }
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
@@ -108,8 +147,10 @@ export default async function handler(req, res) {
       const items = Array.isArray(body.items) ? body.items : [];
       const requestId = body.requestId ? String(body.requestId).slice(0, 120) : null;
       const expectedTotal = Number(body.expectedTotal ?? -1);
+            const normalizedPhone = normalizePhone(customer.phone);
       if (!customer.name || !customer.phone || !customer.address) return res.status(400).json({ error: 'নাম, ফোন ও ঠিকানা প্রয়োজন' });
-      if (!/^01[3-9][0-9]{8}$/.test(String(customer.phone).trim())) return res.status(400).json({ error: 'সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)' });
+      if (!normalizedPhone) return res.status(400).json({ error: 'সঠিক মোবাইল নম্বর দিন (যেমন 01XXXXXXXXX বা +8801XXXXXXXXX)' });
+      customer.phone = normalizedPhone;
       if (!items.length) return res.status(400).json({ error: 'ব্যাগ খালি' });
       if (items.length > 100 || !['inside', 'outside'].includes(customer.region)) return res.status(400).json({ error: 'অর্ডারের তথ্য সঠিক নয়' });
       const uniqueLines = new Set();
@@ -129,6 +170,12 @@ export default async function handler(req, res) {
         }
       }
 
+            {
+        const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+        const { count: recentCount, error: recentError } = await supabase.from('orders').select('id', { count: 'exact', head: true }).eq('phone', customer.phone).gte('created_at', since);
+        if (recentError) throw recentError;
+        if ((recentCount || 0) >= 5) return res.status(429).json({ error: 'এই নম্বর থেকে অনেক অর্ডার এসেছে। কিছুক্ষণ পরে চেষ্টা করুন অথবা WhatsApp-এ যোগাযোগ করুন।' });
+      }
       const [{ data: products, error: productError }, { data: settingsRow, error: settingsError }] = await Promise.all([
         supabase.from('products').select('*'),
         supabase.from('settings').select('*').eq('id', 'main').maybeSingle(),
@@ -174,10 +221,9 @@ export default async function handler(req, res) {
         weight += itemWeight * quantity;
         reservations.push({ product, shade, quantity, stock });
       }
-
-      const region = customer.region === 'outside' ? 'outside' : 'inside';
-      const delivery = calcDelivery(settings, weight, region, subtotal);
+const region = customer.region === 'outside' || isOutsideDhakaCity(customer.address) ? 'outside' : 'inside';
       const discount = coupon ? Math.round(subtotal * Number(coupon.discount_percent) / 100) : 0;
+      const delivery = calcDelivery(settings, weight, region, subtotal);
       const total = subtotal - discount + delivery;
       if (!Number.isFinite(expectedTotal) || Math.abs(expectedTotal - total) > 1) return res.status(400).json({ error: 'মোট মূল্যে পরিবর্তন হয়েছে। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।' });
 
@@ -187,24 +233,59 @@ export default async function handler(req, res) {
       if (mobilePay && !/^TrxID: [A-Z0-9]{8,15}(?:\n|$)/.test(userNote)) return res.status(400).json({ error: 'ভুল বা অনুপস্থিত ট্রানজেকশন আইডি — অর্ডার নিশ্চিত করা যায়নি।' });
       const note = userNote ? `[পেমেন্ট: ${paymentLabel}]\n${userNote}` : `[পেমেন্ট: ${paymentLabel}]`;
 
-      for (const { product, shade, quantity, stock } of reservations) {
-        if (shade) {
-          const { data: fresh, error: freshError } = await supabase.from('products').select('shades').eq('id', product.id).single();
-          if (freshError) throw freshError;
-          const freshShades = Array.isArray(fresh?.shades) ? fresh.shades : [];
-          const freshShade = freshShades.find((entry) => entry.id === shade.id);
-          const freshStock = Number(freshShade?.stock || 0);
-          if (!freshShade || freshStock < quantity) return res.status(400).json({ error: `${product.name} · ${shade.name} স্টকে নেই` });
-          const newShades = freshShades.map((entry) => entry.id === shade.id ? { ...entry, stock: freshStock - quantity } : entry);
-          const { data: updated, error: updateError } = await supabase.from('products').update({ shades: newShades, stock: 0 }).eq('id', product.id).contains('shades', [freshShade]).select('id');
-          if (updateError) throw updateError;
-          if (!updated?.length) return res.status(400).json({ error: 'স্টক আপডেট ব্যর্থ — আবার চেষ্টা করুন' });
-        } else {
-          const { data: updated, error: updateError } = await supabase.from('products').update({ stock: stock - quantity }).eq('id', product.id).eq('stock', stock).gte('stock', quantity).select('id');
-          if (updateError) throw updateError;
-          if (!updated?.length) return res.status(400).json({ error: `${product.name} স্টকে নেই` });
+           const reserved = [];
+      const restoreStock = async () => {
+        for (const r of reserved) {
+          try {
+            const { data: cur } = await supabase.from('products').select('stock, shades').eq('id', r.product.id).single();
+            if (!cur) continue;
+            if (r.shade) {
+              const shades = (Array.isArray(cur.shades) ? cur.shades : []).map((e) =>
+                e.id === r.shade.id ? { ...e, stock: Number(e.stock || 0) + r.quantity } : e
+              );
+              await supabase.from('products').update({ shades }).eq('id', r.product.id);
+            } else {
+              await supabase.from('products').update({ stock: Number(cur.stock || 0) + r.quantity }).eq('id', r.product.id);
+            }
+          } catch (restoreError) {
+            console.error('stock restore failed', restoreError);
+          }
         }
-      }
+      };
+
+      try {
+        for (const { product, shade, quantity, stock } of reservations) {
+          if (shade) {
+            const { data: fresh, error: freshError } = await supabase.from('products').select('shades').eq('id', product.id).single();
+            if (freshError) throw freshError;
+            const freshShades = Array.isArray(fresh?.shades) ? fresh.shades : [];
+            const freshShade = freshShades.find((entry) => entry.id === shade.id);
+            const freshStock = Number(freshShade?.stock || 0);
+            if (!freshShade || freshStock < quantity) {
+              await restoreStock();
+              return res.status(400).json({ error: `${product.name} · ${shade.name} স্টকে নেই` });
+            }
+            const newShades = freshShades.map((entry) => entry.id === shade.id ? { ...entry, stock: freshStock - quantity } : entry);
+            const { data: updated, error: updateError } = await supabase.from('products').update({ shades: newShades, stock: 0 }).eq('id', product.id).contains('shades', [freshShade]).select('id');
+            if (updateError) throw updateError;
+            if (!updated?.length) {
+              await restoreStock();
+              return res.status(400).json({ error: 'স্টক আপডেট ব্যর্থ — আবার চেষ্টা করুন' });
+            }
+          } else {
+            const { data: updated, error: updateError } = await supabase.from('products').update({ stock: stock - quantity }).eq('id', product.id).eq('stock', stock).gte('stock', quantity).select('id');
+            if (updateError) throw updateError;
+            if (!updated?.length) {
+              await restoreStock();
+              return res.status(400).json({ error: `${product.name} স্টকে নেই` });
+            }
+          }
+          reserved.push({ product, shade, quantity });
+        }
+      } catch (reserveError) {
+        await restoreStock();
+        throw reserveError;
+  }
 
       const order = {
         id: genOrderId(), request_id: requestId,
@@ -217,6 +298,7 @@ export default async function handler(req, res) {
       };
       const { data, error } = await supabase.from('orders').insert(order).select().single();
       if (error) {
+                await restoreStock();
         if (String(error.message || '').includes('duplicate') && requestId) {
           const { data: again, error: againError } = await supabase.from('orders').select('*').eq('request_id', requestId).maybeSingle();
           if (againError) throw againError;
@@ -255,8 +337,20 @@ export default async function handler(req, res) {
       if (status !== undefined) updates.status = String(status).slice(0, 80);
       if (note !== undefined) updates.admin_note = String(note).slice(0, 2000);
       if (!Object.keys(updates).length) return res.status(400).json({ error: 'আপডেট করার তথ্য প্রয়োজন' });
+            const { data: current, error: currentError } = await supabase.from('orders').select('status,items').eq('id', id).maybeSingle();
+      if (currentError) throw currentError;
+      if (!current) return res.status(404).json({ error: 'অর্ডারটি পাওয়া যায়নি' });
+      const stockChanges = updates.status !== undefined && (current.status === CANCELLED) !== (updates.status === CANCELLED);
+      const direction = updates.status === CANCELLED ? 1 : -1;
+      if (stockChanges) {
+        const result = await adjustStock(current.items, direction);
+        if (!result.ok) return res.status(400).json({ error: result.error });
+      }
       const { data, error } = await supabase.from('orders').update(updates).eq('id', id).select().single();
-      if (error) throw error;
+      if (error) {
+        if (stockChanges) await adjustStock(current.items, -direction).catch(() => {});
+        throw error;
+      }
       return res.status(200).json(mapOrder(data));
     }
 

@@ -46,6 +46,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ url: urlData.publicUrl });
   } catch (err) {
     console.error('upload API error:', err);
-    res.status(500).json({ error: err.message });
+        res.status(500).json({ error: 'সার্ভারে সমস্যা হয়েছে। আবার চেষ্টা করুন।' });
   }
 }

@@ -8,10 +8,15 @@ import Home from '../legacy-pages/Home';
 import Shop, { AboutPage, ShadesPage } from '../legacy-pages/Shop';
 import { PrivacyPolicy, TermsPage, ReturnPolicy } from '../legacy-pages/Policies';
 import Admin from '../legacy-pages/Admin';
+import ProductPage from '../legacy-pages/ProductPage';
 import { EmptyState } from './UI';
 function RouteContent() {
   const pathname = usePathname();
   let content: React.ReactNode;
+    let productId = '';
+  if (pathname?.startsWith('/product/')) {
+    try { productId = decodeURIComponent(pathname.slice(9).replace(/\/$/, '')); } catch { productId = ''; }
+  }
   switch (pathname) {
     case '/': content = <Home />; break;
     case '/shop': content = <Shop />; break;
@@ -20,7 +25,7 @@ function RouteContent() {
     case '/privacy-policy': content = <PrivacyPolicy />; break;
     case '/terms': content = <TermsPage />; break;
     case '/return-policy': content = <ReturnPolicy />; break;
-    default: content = <div className="container not-found"><EmptyState title="এই পাতাটি খুঁজে পাওয়া যায়নি" text="চলুন, আপনার শখের ঠিকানায় ফিরে যাই।"><Link className="button primary" to="/">হোমে ফিরে যান</Link></EmptyState></div>;
+        default: content = productId ? <ProductPage id={productId} /> : <div className="container not-found"><EmptyState title="এই পাতাটি খুঁজে পাওয়া যায়নি" text="চলুন, আপনার শখের ঠিকানায় ফিরে যাই।"><Link className="button primary" to="/">হোমে ফিরে যান</Link></EmptyState></div>;
   }
   return <StoreProvider>{pathname?.startsWith('/admin') ? <Admin /> : <OutletProvider outlet={content}><Layout /></OutletProvider>}</StoreProvider>;
 }
