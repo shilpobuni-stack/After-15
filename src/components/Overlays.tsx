@@ -13,6 +13,7 @@ import {
   Info,
   Lock,
   MapPin,
+    MessageCircle,
   Package,
   Phone,
   Search,
@@ -166,11 +167,20 @@ function ProductDetail({ product, initialShade }: { product: Product; initialSha
   );
 }
 
+function loadSavedCustomer() {
+  try {
+    const s = JSON.parse(localStorage.getItem('kushi-customer') || 'null');
+    return { name: String(s?.name || ''), phone: String(s?.phone || ''), address: String(s?.address || '') };
+  } catch {
+    return { name: '', phone: '', address: '' };
+  }
+}
 function CartDrawer() {
   const { cart, setCart, products, settings, setPanel, placeOrder, notify } = useStore();
   const [step, setStep] = useState<'cart' | 'checkout' | 'done'>('cart');
   const [region, setRegion] = useState<'inside' | 'outside'>('inside');
-    const [address, setAddress] = useState('');
+      const [saved] = useState(loadSavedCustomer);
+  const [address, setAddress] = useState(saved.address);
   const addressOutside = region === 'inside' && isOutsideDhakaCity(address);
   const effectiveRegion: 'inside' | 'outside' = addressOutside ? 'outside' : region;
   const [payment, setPayment] = useState<PaymentMethod>('cod');
@@ -340,6 +350,11 @@ function CartDrawer() {
       } catch {
         /* ignore */
       }
+            try {
+        localStorage.setItem('kushi-customer', JSON.stringify({ name, phone, address }));
+      } catch {
+        /* ignore */
+                                     }
       setDoneOrder(order);
       setStep('done');
     } catch (err) {
