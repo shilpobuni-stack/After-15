@@ -86,6 +86,11 @@ export default function Shop() {
           <BrandMark size={52} />
         </span>
       </div>
+            <div className="shop-perks">
+        <span>ক্যাশ অন ডেলিভারি</span>
+        <span>সারাদেশে ডেলিভারি</span>
+        <span>বিকাশ · নগদ · রকেট</span>
+      </div>
       <div className="shop-layout">
         <aside className="shop-filters">
           <h3>
@@ -96,7 +101,7 @@ export default function Shop() {
             <span>সব পণ্য</span>
             <span>{fmt(products.filter((p) => p.active).length)}</span>
           </button>
-          {categories.map((c) => (
+                    {categories.filter((c) => category === c.id || products.some((p) => p.active && p.category === c.id)).map((c) => (
             <button
               key={c.id}
               className={category === c.id ? 'selected' : ''}
@@ -161,9 +166,9 @@ export default function Shop() {
           <div className="results-toolbar">
             <span>{fmt(filtered.length)}টি পণ্য পাওয়া গেছে</span>
             <label>
-              পণ্য সাজান{' '}
+                            সাজান:{' '}
               <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="পণ্য সাজান">
-                <option value="popular">সাজান: জনপ্রিয়তা অনুযায়ী</option>
+                                <option value="popular">জনপ্রিয়তা অনুযায়ী</option>
                 <option value="price-asc">দাম: কম থেকে বেশি</option>
                 <option value="price-desc">দাম: বেশি থেকে কম</option>
                 <option value="name">নাম অনুযায়ী</option>
