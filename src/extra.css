@@ -223,3 +223,43 @@ body:has(.pp-sticky) .help-dial{bottom:calc(150px + env(safe-area-inset-bottom,0
 .co-region-note{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;font-size:13px;line-height:1.6}
 .co-region-hint{margin:8px 0 0;color:#78716c;font-size:12px}
 .dial-call b{background:#0ea5e9}
+/* ===== শপ পাতা: নতুন সাজ ===== */
+.shop-page .page-heading{padding:18px 22px;margin-bottom:14px}
+.shop-page .page-heading h1{font-size:26px;line-height:1.4}
+.shop-perks{display:flex;gap:8px;margin:0 0 14px;padding:2px 2px 6px;overflow-x:auto;scrollbar-width:none}
+.shop-perks::-webkit-scrollbar{display:none}
+.shop-perks span{flex:0 0 auto;padding:7px 14px;border:1px solid #ffe4e6;border-radius:999px;background:#fff;color:#9f1239;font-size:12.5px;font-weight:600;box-shadow:0 2px 8px #e6004c0f}
+.shop-page .product-card{overflow:hidden;border:1px solid #ffe4e6;border-radius:20px;background:#fff;box-shadow:0 6px 22px #e6004c14;transition:transform .2s,box-shadow .2s}
+.shop-page .product-card:hover{transform:translateY(-3px);box-shadow:0 14px 32px #e6004c24}
+.shop-page .product-photo,.shop-page .shop-product-grid .product-photo{border-radius:0}
+.shop-page .product-info{padding:13px 14px 15px}
+.shop-page .product-meta{color:#a8a29e;font-size:12px}
+.shop-page .shop-product-grid .product-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:16px;line-height:1.5}
+.shop-page .price strong{color:var(--accent);font-size:21px}
+.shop-page .price del{font-size:13px}
+.shop-page .mini-cart{min-height:46px;border-radius:14px;font-size:14.5px}
+.shop-page .shop-filters>button:not(.clear-filters){padding:9px 15px;border:1px solid #ffe4e6;border-radius:999px;background:#fff;color:#57534e;font-size:13px}
+.shop-page .shop-filters>button:not(.clear-filters)>span:last-child{font-size:11px}
+.shop-page .shop-filters>button.selected{border-color:transparent;background:var(--action-gradient)!important;color:#fff!important;box-shadow:0 6px 16px #e6004c33}
+.shop-page .shop-filters>button.selected>span:last-child{color:#ffe4e6}
+.shop-page .results-toolbar{font-size:13px}
+.shop-page .results-toolbar select{font-size:13px}
+@media(max-width:760px){
+.shop-page .page-heading{margin-bottom:12px;padding:14px 16px}
+.shop-page .page-heading h1{font-size:21px}
+.shop-page .page-heading p,.shop-page .page-heading .section-kicker,.shop-page .page-heading-icon{display:none}
+.shop-page .shop-search{display:none}
+.shop-page .shop-layout{gap:6px}
+.shop-page .shop-filters>h3{display:none}
+.shop-page .shop-filters>.checkbox-label{flex-basis:auto;margin:4px 12px 0 0;font-size:12.5px}
+.shop-page .shop-filters>.clear-filters{margin-top:4px;font-size:12.5px}
+.shop-page .results-toolbar{padding-block:10px}
+.shop-page .results-toolbar>select{max-width:none;font-size:13px}
+.shop-page .shop-product-grid{grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:14px 12px}
+.shop-page .shop-product-grid .product-title{font-size:15px}
+.shop-page .shop-product-grid .product-meta{font-size:11.5px}
+.shop-page .card-shades{gap:6px}
+.shop-page .card-shades>button:not(.more-shades){width:24px!important;height:24px!important;min-width:0!important}
+.shop-page .card-shades>button:not(.more-shades):nth-child(n+5){display:none}
+.shop-page .card-shades>.more-shades{padding:0 4px;font-size:11px}
+                                         }
