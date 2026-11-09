@@ -58,6 +58,7 @@ export default function Shop() {
         else list = [...list].sort((a, b) => Number(b.featured) - Number(a.featured) || Number(b.badge === 'বেস্টসেলার') - Number(a.badge === 'বেস্টসেলার'));
     return list;
   }, [products, category, q, search, maxPrice, inStock, sort, isNew]);
+    const activeCategory = categories.find((c) => c.id === category);
 
   const clear = () => {
     setParams({});
@@ -68,11 +69,19 @@ export default function Shop() {
   };
 
   return (
-    <div className="container shop-page">
+    <div     <div className={`container shop-page${activeCategory ? ' has-cat' : ''}`}>
       <div className="breadcrumb">
         <Link to="/">হোম</Link>
         <ChevronRight size={13} />
-        <span>সব পণ্য</span>
+                {activeCategory ? (
+          <>
+            <Link to="/shop">সব পণ্য</Link>
+            <ChevronRight size={13} />
+            <span>{activeCategory.name}</span>
+          </>
+        ) : (
+          <span>সব পণ্য</span>
+        )}
       </div>
       <div className="page-heading">
         <div>
@@ -91,20 +100,51 @@ export default function Shop() {
         <span>সারাদেশে ডেলিভারি</span>
         <span>বিকাশ · নগদ · রকেট</span>
       </div>
+            <div className="cat-strip" aria-label="ক্যাটাগরি">
+        <button className={`cat-tile${category ? '' : ' active'}`} onClick={() => setParam('category', '')}>
+          <span className="cat-tile-img"><BrandMark size={30} /></span>
+          <b>সব পণ্য</b>
+          <small>{fmt(products.filter((p) => p.active).length)}টি</small>
+        </button>
+        {categories
+          .filter((c) => category === c.id || products.some((p) => p.active && p.category === c.id))
+          .map((c) => (
+            <button key={c.id} className={`cat-tile${category === c.id ? ' active' : ''}`} onClick={() => setParam('category', c.id)}>
+              <span className="cat-tile-img">
+                {c.image ? <img src={c.image} alt="" loading="lazy" /> : <BrandMark size={30} />}
+              </span>
+              <b>{c.name}</b>
+              <small>{fmt(products.filter((p) => p.active && p.category === c.id).length)}টি</small>
+            </button>
+          ))}
+      </div>
+      {activeCategory && (
+        <div className="cat-hero" style={activeCategory.image ? { backgroundImage: `url("${activeCategory.image}")` } : undefined}>
+          <div className="cat-hero-shade">
+            <span className="cat-hero-kicker">ক্যাটাগরি</span>
+            <h2>{activeCategory.name}</h2>
+            <p>
+              {fmt(filtered.length)}টি পণ্য
+              {filtered.length > 0 && <> · {money(Math.min(...filtered.map((p) => p.price)))} থেকে শুরু</>}
+            </p>
+            <button onClick={() => setParam('category', '')}>সব ক্যাটাগরি দেখুন</button>
+          </div>
+        </div>
+      )}
       <div className="shop-layout">
         <aside className="shop-filters">
           <h3>
             <Filter size={17} /> আপনার পছন্দমতো
           </h3>
-          <h4>ক্যাটাগরি</h4>
-          <button className={category ? '' : 'selected'} onClick={() => setParam('category', '')}>
+                    <h4 className="cat-filter">ক্যাটাগরি</h4>
+          <button className={`cat-filter${category ? '' : ' selected'}`} onClick={() => setParam('category', '')}>
             <span>সব পণ্য</span>
             <span>{fmt(products.filter((p) => p.active).length)}</span>
           </button>
-                    {categories.filter((c) => category === c.id || products.some((p) => p.active && p.category === c.id)).map((c) => (
+          {categories.filter((c) => category === c.id || products.some((p) => p.active && p.category === c.id)).map((c) => (
             <button
               key={c.id}
-              className={category === c.id ? 'selected' : ''}
+              className={`cat-filter${category === c.id ? ' selected' : ''}`}
               onClick={() => setParam('category', c.id)}
             >
               <span>{c.name}</span>
