@@ -19,6 +19,7 @@ export default function Shop() {
   const category = params.get('category') || '';
   const q = params.get('q') || '';
   const isNew = params.get('filter') === 'new';
+    const quick = params.get('filter') || '';
   const [maxPrice, setMaxPrice] = useState(2000);
   const [inStock, setInStock] = useState(false);
   const [sort, setSort] = useState('popular');
@@ -26,8 +27,7 @@ export default function Shop() {
     const [visible, setVisible] = useState(12);
   useEffect(() => {
     setVisible(12);
-  }, [category, q, search, maxPrice, inStock, sort, isNew]);
-
+  }, [category, q, search, maxPrice, inStock, sort, isNew, quick]);
   const setParam = (key: string, value: string) => {
     const next = new URLSearchParams(params);
     if (value) next.set(key, value);
@@ -40,6 +40,8 @@ export default function Shop() {
     let list = products.filter((p) => p.active);
     if (category) list = list.filter((p) => p.category === category);
     if (isNew) list = list.filter((p) => p.badge === 'নতুন');
+        if (quick === 'sale') list = list.filter((p) => p.oldPrice > p.price);
+    if (quick === 'best') list = list.filter((p) => p.badge === 'বেস্টসেলার');
     if (term) {
       list = list.filter(
         (p) =>
@@ -57,7 +59,7 @@ export default function Shop() {
     else if (sort === 'name') list = [...list].sort((a, b) => a.name.localeCompare(b.name, 'bn'));
         else list = [...list].sort((a, b) => Number(b.featured) - Number(a.featured) || Number(b.badge === 'বেস্টসেলার') - Number(a.badge === 'বেস্টসেলার'));
     return list;
-  }, [products, category, q, search, maxPrice, inStock, sort, isNew]);
+    }, [products, category, q, search, maxPrice, inStock, sort, isNew, quick]);
     const activeCategory = categories.find((c) => c.id === category);
 
   const clear = () => {
@@ -69,7 +71,7 @@ export default function Shop() {
   };
 
   return (
-    <div     <div className={`container shop-page${activeCategory ? ' has-cat' : ''}`}>
+    <div className={`container shop-page${activeCategory ? ' has-cat' : ''}`}>
       <div className="breadcrumb">
         <Link to="/">হোম</Link>
         <ChevronRight size={13} />
@@ -131,6 +133,18 @@ export default function Shop() {
           </div>
         </div>
       )}
+            <div className="quick-filters">
+        {[
+          { key: '', label: 'সব' },
+          { key: 'sale', label: 'ছাড়ের পণ্য' },
+          { key: 'best', label: 'বেস্টসেলার' },
+          { key: 'new', label: 'নতুন' },
+        ].map((f) => (
+          <button key={f.key} className={quick === f.key ? 'active' : ''} onClick={() => setParam('filter', f.key)}>
+            {f.label}
+          </button>
+        ))}
+      </div>
       <div className="shop-layout">
         <aside className="shop-filters">
           <h3>
