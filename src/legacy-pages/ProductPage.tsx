@@ -85,6 +85,7 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
       }
     };
     add(product.image, product.name);
+        (product.images || []).forEach((src, i) => add(src, `${product.name} · ছবি ${i + 2}`));
     product.shades.forEach((s) => add(s.image, `${s.name} · ${s.code}`, s.id));
     return list.slice(0, 10);
   }, [product]);
