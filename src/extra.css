@@ -297,3 +297,9 @@ body:has(.pp-sticky) .help-dial{bottom:calc(150px + env(safe-area-inset-bottom,0
 .shop-page .shop-product-grid .product-card:nth-child(5){animation-delay:.24s}
 .shop-page .shop-product-grid .product-card:nth-child(6){animation-delay:.3s}
 @media(prefers-reduced-motion:reduce){.shop-page .shop-product-grid .product-card{animation:none}}
+.product-image-button img,.pp-main>img,.pp-thumbs img,.cart-item>img{object-fit:contain!important;background:#fff}
+.product-image-button,.pp-main{background:#fff}
+.more-images-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0}
+.more-images-item{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid #e7e5e4;background:#fafaf9}
+.more-images-item img{width:100%;height:100%;object-fit:contain}
+.more-images-item button{position:absolute;top:3px;right:3px;width:22px;height:22px;display:grid;place-items:center;border:0;border-radius:50%;background:#000a;color:#fff;cursor:pointer}
