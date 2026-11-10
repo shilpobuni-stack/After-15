@@ -163,6 +163,70 @@ function ImageField({
   );
 }
 
+function MoreImages({ value, onChange }: { value: string[]; onChange: (list: string[]) => void }) {
+  const { cloud } = useStore();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+
+  async function onFiles(files?: FileList | null) {
+    if (!files || !files.length) return;
+    if (!cloud.isMerchant) {
+      setErr('ছবি আপলোড করতে মার্চেন্ট লগইন প্রয়োজন।');
+      return;
+    }
+    setBusy(true);
+    setErr('');
+    try {
+      const added: string[] = [];
+      for (const f of Array.from(files).slice(0, 8 - value.length)) {
+        added.push(await uploadImage(f));
+      }
+      onChange([...value, ...added]);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'আপলোড ব্যর্থ');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="image-field more-images">
+      <span>আরও ছবি (সর্বোচ্চ ৮টি)</span>
+      {value.length > 0 && (
+        <div className="more-images-grid">
+          {value.map((src, i) => (
+            <div className="more-images-item" key={`${src}-${i}`}>
+              <img src={src} alt="" />
+              <button type="button" onClick={() => onChange(value.filter((_, j) => j !== i))} aria-label="ছবি সরান">
+                <X size={13} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="image-field-actions">
+        <button type="button" className="button secondary" disabled={busy || value.length >= 8} onClick={() => fileRef.current?.click()}>
+          <Upload size={15} /> {busy ? 'অপেক্ষা করুন' : 'আরও ছবি যোগ করুন'}
+        </button>
+        <small>একসাথে অনেক ছবি বাছা যায়</small>
+      </div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        onChange={(e) => {
+          onFiles(e.target.files);
+          e.target.value = '';
+        }}
+      />
+      {err && <p className="cloud-error">{err}</p>}
+    </div>
+  );
+    }
+
 function ShadeImageCell({
   shade,
   onSaved,
@@ -575,6 +639,7 @@ function ProductEditor({
             <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={4} />
           </Field>
           <ImageField label="পণ্যের ছবি" value={form.image} onChange={(url) => set('image', url)} />
+                    <MoreImages value={form.images || []} onChange={(list) => set('images', list)} />
           <div className="form-grid">
             <ToggleField value={form.active} onChange={(v) => set('active', v)} label="পণ্যটি দেখান" />
             <ToggleField value={form.featured} onChange={(v) => set('featured', v)} label="ফিচার্ড হিসেবে দেখান" />
