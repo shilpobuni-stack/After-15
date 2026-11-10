@@ -35,6 +35,7 @@ export default async function handler(req, res) {
         weight: Number(body.weight || 0),
         stock: Number(body.stock || 0),
         image: String(body.image || ''),
+                images: Array.isArray(body.images) ? body.images.map((x) => String(x)).filter(Boolean).slice(0, 8) : [],
         badge: String(body.badge || ''),
         featured: !!body.featured,
         active: body.active !== false,
@@ -42,13 +43,13 @@ export default async function handler(req, res) {
         updated_at: new Date().toISOString(),
       };
 
-      const { data, error } = await supabase
-        .from('products')
-        .upsert(row, { onConflict: 'id' })
-        .select()
-        .single();
-      if (error) throw error;
-      return res.status(200).json(data);
+            let result = await supabase.from('products').upsert(row, { onConflict: 'id' }).select().single();
+      if (result.error && /images/i.test(result.error.message || '')) {
+        const { images, ...rowWithoutImages } = row;
+        result = await supabase.from('products').upsert(rowWithoutImages, { onConflict: 'id' }).select().single();
+      }
+      if (result.error) throw result.error;
+      return res.status(200).json(result.data);
     }
 
     if (req.method === 'DELETE') {
