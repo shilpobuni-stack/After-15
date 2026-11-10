@@ -360,6 +360,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           weight: p.weight,
           stock: p.stock,
           image: p.image,
+                    images: p.images || [],
           badge: p.badge,
           featured: p.featured,
           active: p.active,
