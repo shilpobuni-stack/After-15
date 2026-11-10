@@ -19,6 +19,7 @@ export type Product = {
   weight: number;
   stock: number;
   image: string;
+    images?: string[];
   badge: string;
   featured: boolean;
   active: boolean;
@@ -443,6 +444,7 @@ export function mapProduct(n: Record<string, unknown>): Product {
     weight: Number(n.weight || 0),
     stock: Number(n.stock || 0),
     image: String(n.image || ''),
+        images: Array.isArray(n.images) ? (n.images as unknown[]).map((x) => String(x)).filter(Boolean) : [],
     badge: String(n.badge || ''),
     featured: !!n.featured,
     active: n.active !== false,
