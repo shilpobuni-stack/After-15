@@ -303,3 +303,11 @@ body:has(.pp-sticky) .help-dial{bottom:calc(150px + env(safe-area-inset-bottom,0
 .more-images-item{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid #e7e5e4;background:#fafaf9}
 .more-images-item img{width:100%;height:100%;object-fit:contain}
 .more-images-item button{position:absolute;top:3px;right:3px;width:22px;height:22px;display:grid;place-items:center;border:0;border-radius:50%;background:#000a;color:#fff;cursor:pointer}
+.pp-main{aspect-ratio:auto!important}
+.pp-main>img{height:auto!important;max-height:80vh;object-fit:contain!important}
+.pp-zoomhint{pointer-events:auto!important;border:0;cursor:pointer;font-family:inherit}
+.pp-zoom{z-index:2000!important}
+.pp-zoom-close{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:50%;background:#ffffff26;color:#fff;cursor:pointer}
+.pp-desc{margin:6px 0 16px;padding:16px;border:1px solid #ffe4e6;border-radius:16px;background:#fff}
+.pp-desc h3{margin:0 0 8px;font-size:15px}
+.pp-desc p{margin:0;font-size:14px;line-height:1.85;color:#44403c;white-space:pre-line}
