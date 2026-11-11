@@ -85,7 +85,7 @@ function ProductDetail({ product, initialShade }: { product: Product; initialSha
             <strong>{money(product.price)}</strong>
             {product.oldPrice > product.price && <del>{money(product.oldPrice)}</del>}
             {product.oldPrice > product.price && (
-              <span>{fmt(Math.round((1 - product.price / product.oldPrice) * 100))}% সাশ্রয়</span>
+                            <span>{money(product.oldPrice - product.price)} সাশ্রয়</span>
             )}
           </div>
           <p className="detail-description">{product.description}</p>
