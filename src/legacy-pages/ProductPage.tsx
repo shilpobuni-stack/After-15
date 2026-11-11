@@ -333,6 +333,14 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
               <p>{product.description}</p>
             </div>
           )}
+                    <div className="pp-share">
+            <span>
+              <Share2 size={15} /> শেয়ার করুন
+            </span>
+            <button type="button" onClick={shareWhatsApp}>
+              <MessageCircle size={15} /> WhatsApp
+            </button>
+            <button type="button" onClick={shareFacebook}>
               <Facebook size={15} /> Facebook
             </button>
             <button type="button" onClick={copyLink}>
