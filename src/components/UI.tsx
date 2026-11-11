@@ -182,11 +182,6 @@ export function ProductCard({ product }: { product: Product }) {
             {product.badge === 'বেস্টসেলার' && <span>✧</span>} {product.badge}
           </span>
         )}
-        {product.oldPrice > product.price && (
-          <span className="discount-badge">
-            -{Math.round((1 - product.price / product.oldPrice) * 100)}%
-          </span>
-        )}
                 {totalStock(product) === 0 && <span className="stock-out-badge">স্টক শেষ</span>}
         {totalStock(product) > 0 && totalStock(product) <= 5 && (
           <span className="stock-low-badge">মাত্র {fmt(totalStock(product))}টি বাকি</span>
