@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   ChevronRight,
@@ -8,10 +9,8 @@ import {
   MessageCircle,
   Search,
   Share2,
-  ShieldCheck,
   ShoppingBag,
-  Truck,
-  Wallet,
+  X,
   Zap,
   ZoomIn,
 } from 'lucide-react';
@@ -190,8 +189,7 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
               src={mainSrc}
               alt={shade?.image ? `${product.name} · ${shade.name} · ${shade.code}` : product.name}
             />
-            <div className="pp-tag">
-              {discountPercent > 0 && <span className="off">-{fmt(discountPercent)}%</span>}
+            <div className="pp-tag"
               {product.badge && <span>{product.badge}</span>}
             </div>
             <button
@@ -205,9 +203,16 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
             >
               <Heart size={21} fill={wished ? 'currentColor' : 'none'} />
             </button>
-            <span className="pp-zoomhint">
+                     <button
+              type="button"
+              className="pp-zoomhint"
+              onClick={(e) => {
+                e.stopPropagation();
+                setZoom(true);
+              }}
+            >
               <ZoomIn size={14} /> বড় করে দেখুন
-            </span>
+            </button>
           </div>
           {gallery.length > 1 && (
             <div className="pp-thumbs">
@@ -322,47 +327,12 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
             </button>
           </div>
 
-          <div className="pp-trust">
-            <div>
-              <Wallet size={22} />
-              <span>
-                <b>ক্যাশ অন ডেলিভারি</b>
-                <small>পণ্য হাতে পেয়ে টাকা দিন</small>
-              </span>
+                    {product.description && (
+            <div className="pp-desc">
+              <h3>পণ্যের বিবরণ</h3>
+              <p>{product.description}</p>
             </div>
-            <div>
-              <Truck size={22} />
-              <span>
-                <b>সারা বাংলাদেশে ডেলিভারি</b>
-                <small>
-                  {freeLimit > 0 ? `${money(freeLimit)}-এর অর্ডারে ফ্রি` : 'ঢাকা সিটি ও সারাদেশে'}
-                </small>
-              </span>
-            </div>
-            <div>
-              <ShieldCheck size={22} />
-              <span>
-                <b>বিকাশ · নগদ · রকেট</b>
-                <small>সহজ অগ্রিম পেমেন্ট</small>
-              </span>
-            </div>
-            <div>
-              <MessageCircle size={22} />
-              <span>
-                <b>WhatsApp-এ সহায়তা</b>
-                <small>পণ্য নিয়ে প্রশ্ন? মেসেজ দিন</small>
-              </span>
-            </div>
-          </div>
-
-          <div className="pp-share">
-            <span>
-              <Share2 size={15} /> শেয়ার করুন
-            </span>
-            <button type="button" onClick={shareWhatsApp}>
-              <MessageCircle size={15} /> WhatsApp
-            </button>
-            <button type="button" onClick={shareFacebook}>
+          )}
               <Facebook size={15} /> Facebook
             </button>
             <button type="button" onClick={copyLink}>
@@ -373,12 +343,7 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
       </div>
 
       <div className="pp-sections">
-        {product.description && (
-          <details open>
-            <summary>পণ্যের বিবরণ</summary>
-            <div className="body">{product.description}</div>
-          </details>
-        )}
+    
         <details>
           <summary>ডেলিভারি ও চার্জ</summary>
           <div className="body">
@@ -427,11 +392,16 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
         </button>
       </div>
 
-      {zoom && (
-        <div className="pp-zoom" onClick={() => setZoom(false)} role="dialog" aria-label="ছবি বড় করে দেখুন">
-          <img src={mainSrc} alt={product.name} />
-        </div>
-      )}
+            {zoom &&
+        createPortal(
+          <div className="pp-zoom" onClick={() => setZoom(false)} role="dialog" aria-label="ছবি বড় করে দেখুন">
+            <button type="button" className="pp-zoom-close" onClick={() => setZoom(false)} aria-label="বন্ধ করুন">
+              <X size={22} />
+            </button>
+            <img src={mainSrc} alt={product.name} />
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
