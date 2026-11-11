@@ -189,7 +189,7 @@ function ProductView({ product, initialShade }: { product: Product; initialShade
               src={mainSrc}
               alt={shade?.image ? `${product.name} · ${shade.name} · ${shade.code}` : product.name}
             />
-            <div className="pp-tag"
+                        <div className="pp-tag">
               {product.badge && <span>{product.badge}</span>}
             </div>
             <button
