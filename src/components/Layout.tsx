@@ -2,21 +2,22 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
+  Banknote,
   ChevronDown,
   Facebook,
   Heart,
   Home,
   Instagram,
   LayoutGrid,
-  MapPin,
   Menu,
   MessageCircle,
   Package,
   Palette,
-    Phone,
+  Phone,
+  Rocket,
   Search,
-  ShieldCheck,
   ShoppingBag,
+  Smartphone,
   Sparkles,
   User,
   Wallet,
@@ -55,9 +56,7 @@ export function Layout() {
   const fbId = fbUrl.match(/[?&]id=(\d+)/)?.[1];
   const fbName = fbUrl.replace(/[?#].*$/, '').replace(/\/+$/, '').split('/').pop();
   const messengerUrl = fbUrl ? `https://m.me/${fbId || fbName}` : '';
-  const shadeCount = new Set(
-    products.filter((p) => p.active && p.variantLabel !== 'সাইজ').flatMap((p) => p.shades.map((s) => s.code))
-  ).size;
+  
   const year = new Date().getFullYear();
 
   return (
@@ -237,21 +236,9 @@ export function Layout() {
             <span>
               <strong>যত্নে বাছাই করা উপকরণ</strong>
               <small>আপনার শখের সাথে আপস নয়</small>
-            </span>
-          </div>
-          <div>
-            <Heart />
-            <span>
-              <strong>ভালোবাসায়, আপনার পাশে</strong>
-              <small>নতুন শুরুতে আমরা আছি সাথে</small>
-            </span>
-          </div>
-        </div>
-      </section>
-
-      <footer>
-        <div className="container footer-main">
-          <div className="footer-brand">
+      <footer className="site-footer">
+        <div className="container sf-top">
+          <div className="sf-brand">
             <Link to="/" className="brand">
               <span className="reference-brand-mark" aria-hidden="true">
                 <BrandMark size={27} />
@@ -261,71 +248,51 @@ export function Layout() {
                 <small>{settings.tagline}</small>
               </span>
             </Link>
-            <p>
-              একটুখানি শখ, একরাশ রঙ, আর অনেকখানি ভালোবাসা।
-              <br />
-              আপনার সৃষ্টির ছোট্ট সঙ্গী।
-            </p>
-            <span className="made-with">
-              <Heart size={12} /> যত্নে বাছাই, ভালোবাসায় বোনা
-            </span>
+            <p>একটুখানি শখ, একরাশ রঙ, আর অনেকখানি ভালোবাসা।</p>
           </div>
-          <div>
-            <h4>ঘুরে দেখুন</h4>
-            <Link to="/shop">সব পণ্য</Link>
-            <Link to="/shades">শেড কালেকশন</Link>
-            <Link to="/shop?filter=new">নতুন এসেছে</Link>
-            <Link to="/about">আমাদের গল্প</Link>
-          </div>
-          <div>
-            <h4>আপনার প্রয়োজনে</h4>
-            <span className="footer-delivery-copy">চেকআউটে স্বয়ংক্রিয় ডেলিভারি চার্জ</span>
-            <button onClick={() => setPanel('orders')}>আমার অর্ডার</button>
-            <button onClick={() => setPanel('help')}>সাধারণ জিজ্ঞাসা</button>
-            <button onClick={() => setPanel('privacy')}>তথ্য ও গোপনীয়তা</button>
-            <button type="button" onClick={() => setPolicy('privacy')}>গোপনীয়তা নীতি</button>
-            <button type="button" onClick={() => setPolicy('terms')}>ব্যবহারের শর্তাবলি</button>
-            <button type="button" onClick={() => setPolicy('return')}>ফেরত নীতি</button>
-            <button type="button" onClick={() => setPolicy('shipping')}>শিপিং নীতি</button>
-            <a href={`tel:${settings.phone.replace(/[^\d+]/g, '')}`}>কল: {settings.phone}</a>
-            <a href={whatsappLink(undefined, settings.phone)} target="_blank" rel="noopener noreferrer">
-              WhatsApp: {settings.phone}
+          <nav className="sf-cols" aria-label="ফুটার">
+            <div>
+              <h4>ঘুরে দেখুন</h4>
+              <Link to="/shop">সব পণ্য</Link>
+              <Link to="/shades">শেড কালেকশন</Link>
+              <Link to="/shop?filter=new">নতুন এসেছে</Link>
+              <Link to="/about">আমাদের গল্প</Link>
+            </div>
+            <div>
+              <h4>সহায়তা ও নীতি</h4>
+              <button type="button" onClick={() => setPanel('orders')}>আমার অর্ডার</button>
+              <button type="button" onClick={() => setPanel('help')}>সাধারণ জিজ্ঞাসা</button>
+              <button type="button" onClick={() => setPolicy('privacy')}>গোপনীয়তা নীতি</button>
+              <button type="button" onClick={() => setPolicy('terms')}>ব্যবহারের শর্তাবলি</button>
+              <button type="button" onClick={() => setPolicy('return')}>ফেরত নীতি</button>
+              <button type="button" onClick={() => setPolicy('shipping')}>শিপিং নীতি</button>
+            </div>
+          </nav>
+          <div className="sf-contact">
+            <a href={`tel:${settings.phone.replace(/[^\d+]/g, '')}`}>
+              <Phone size={15} /> {fmt(settings.phone)}
             </a>
-          </div>
-          <div className="footer-note">
-            <h4>কথা হোক, বুনন নিয়ে</h4>
-            <p>
-              শেড বাছতে বা নতুন কিছু শুরু করতে
-              <br />
-              সাহায্য প্রয়োজন?
-            </p>
-            <a
-              className="footer-contact"
-              href={whatsappLink(undefined, settings.phone)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              WhatsApp-এ মেসেজ দিন <ArrowRight size={14} />
+            <a href={whatsappLink(undefined, settings.whatsappNumber || settings.phone)} target="_blank" rel="noopener noreferrer">
+              <MessageCircle size={15} /> WhatsApp
             </a>
             {settings.facebookUrl && (
-              <a className="footer-contact" href={settings.facebookUrl} target="_blank" rel="noopener noreferrer">
-                <Facebook size={16} /> Facebook
+              <a href={settings.facebookUrl} target="_blank" rel="noopener noreferrer">
+                <Facebook size={15} /> Facebook
               </a>
             )}
             {settings.instagramUrl && (
-              <a className="footer-contact" href={settings.instagramUrl} target="_blank" rel="noopener noreferrer">
-                <Instagram size={16} /> Instagram
+              <a href={settings.instagramUrl} target="_blank" rel="noopener noreferrer">
+                <Instagram size={15} /> Instagram
               </a>
             )}
-            {settings.whatsappNumber && (
-              <a className="footer-contact" href={whatsappLink(undefined, settings.whatsappNumber)} target="_blank" rel="noopener noreferrer">
-                <MessageCircle size={16} /> WhatsApp
-              </a>
-            )}
-            <span>
-              <Wallet size={14} /> COD · বিকাশ · নগদ · রকেট
-            </span>
           </div>
+        </div>
+        <div className="container sf-pay">
+          <span>পেমেন্ট:</span>
+          <i className="cod"><Banknote size={14} /> ক্যাশ অন ডেলিভারি (COD)</i>
+          <i className="bkash"><Wallet size={14} /> বিকাশ</i>
+          <i className="nagad"><Smartphone size={14} /> নগদ</i>
+          <i className="rocket"><Rocket size={14} /> রকেট</i>
         </div>
         <div className="container footer-bottom">
           <span>
