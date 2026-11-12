@@ -38,10 +38,10 @@ export function Layout() {
   const navigate = useNavigate();
   const bagCount = cart.reduce((a, c) => a + c.quantity, 0);
   const bagTotal = cart.reduce(
-  (a, c) => a + (products.find((p) => p.id === c.productId)?.price ?? 0) * c.quantity,
-  0
-);
-    const [dialOpen, setDialOpen] = useState(false);
+    (a, c) => a + (products.find((p) => p.id === c.productId)?.price ?? 0) * c.quantity,
+    0
+  );
+  const [dialOpen, setDialOpen] = useState(false);
   const [bagNudge, setBagNudge] = useState(false);
   const hasBag = bagCount > 0;
   useEffect(() => {
@@ -56,7 +56,6 @@ export function Layout() {
   const fbId = fbUrl.match(/[?&]id=(\d+)/)?.[1];
   const fbName = fbUrl.replace(/[?#].*$/, '').replace(/\/+$/, '').split('/').pop();
   const messengerUrl = fbUrl ? `https://m.me/${fbId || fbName}` : '';
-  
   const year = new Date().getFullYear();
 
   return (
@@ -215,27 +214,6 @@ export function Layout() {
         <Outlet />
       </main>
 
-      <section className="bottom-promise">
-        <div className="container promises">
-          <div>
-            <MapPin />
-            <span>
-              <strong>দেশজুড়ে ডেলিভারি</strong>
-              <small>যত্ন করে পৌঁছে দিই আপনার কাছে</small>
-            </span>
-          </div>
-          <div>
-            <Palette />
-            <span>
-              <strong>{fmt(shadeCount)}টি শেডের সমাহার</strong>
-              <small>প্রতিটি সৃষ্টির জন্য মনের মতো রঙ</small>
-            </span>
-          </div>
-          <div>
-            <ShieldCheck />
-            <span>
-              <strong>যত্নে বাছাই করা উপকরণ</strong>
-              <small>আপনার শখের সাথে আপস নয়</small>
       <footer className="site-footer">
         <div className="container sf-top">
           <div className="sf-brand">
@@ -316,7 +294,7 @@ export function Layout() {
           <LayoutGrid size={20} />
           <span>পণ্য</span>
         </NavLink>
-                <NavLink to="/shades">
+        <NavLink to="/shades">
           <Palette size={20} />
           <span>শেড</span>
         </NavLink>
@@ -346,7 +324,7 @@ export function Layout() {
           </span>
         </button>
       )}
-            <div className={`help-dial ${dialOpen ? 'open' : ''}`}>
+      <div className={`help-dial ${dialOpen ? 'open' : ''}`}>
         <div className="help-dial-items">
           <a
             className="dial-item dial-wa"
@@ -362,7 +340,7 @@ export function Layout() {
               </svg>
             </b>
           </a>
-                    <a
+          <a
             className="dial-item dial-call"
             href={`tel:${settings.phone.replace(/[^\d+]/g, '')}`}
             onClick={() => setDialOpen(false)}
