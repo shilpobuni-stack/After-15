@@ -311,3 +311,26 @@ body:has(.pp-sticky) .help-dial{bottom:calc(150px + env(safe-area-inset-bottom,0
 .pp-desc{margin:6px 0 16px;padding:16px;border:1px solid #ffe4e6;border-radius:16px;background:#fff}
 .pp-desc h3{margin:0 0 8px;font-size:15px}
 .pp-desc p{margin:0;font-size:14px;line-height:1.85;color:#44403c;white-space:pre-line}
+:root{--serif:"Noto Sans Bengali","Hind Siliguri",sans-serif;font-family:"Noto Sans Bengali","Hind Siliguri","DM Sans",sans-serif}
+.product-photo,.shop-product-grid .product-photo,.wishlist-grid .product-photo{aspect-ratio:auto!important;background:#fff}
+.product-image-button{height:auto!important}
+.product-image-button img{height:auto!important;max-height:360px;object-fit:contain!important}
+.site-footer .sf-top{display:grid;grid-template-columns:1.3fr 2fr 1.3fr;gap:28px;padding-block:28px 18px;align-items:start}
+.site-footer .brand,.site-footer .brand strong{color:#fff}
+.site-footer .brand small{color:#fda4af}
+.sf-brand p{margin:10px 0 0;color:#a8a29e;font-size:12.5px;line-height:1.7}
+.sf-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.sf-cols h4{margin:0 0 8px;color:#fff;font-size:13px;font-weight:700}
+.sf-cols a,.sf-cols button{display:block;margin-top:7px;padding:0;border:0;background:none;color:#a8a29e;font:inherit;font-size:12.5px;text-align:left;cursor:pointer}
+.sf-cols a:hover,.sf-cols button:hover{color:#fda4af}
+.sf-contact{display:flex;flex-wrap:wrap;gap:8px}
+.sf-contact a{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border:1px solid #44403c;border-radius:999px;color:#e7e5e4;font-size:12.5px}
+.sf-contact a svg{color:#10b981}
+.sf-pay{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-block:12px;border-top:1px solid #292524}
+.sf-pay>span{margin-right:2px;color:#a8a29e;font-size:12px}
+.sf-pay i{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;color:#fff;font-size:12px;font-style:normal;font-weight:700}
+.sf-pay i.cod{background:#16a34a}
+.sf-pay i.bkash{background:#e2136e}
+.sf-pay i.nagad{background:#f6821f}
+.sf-pay i.rocket{background:#8c3494}
+@media(max-width:760px){.site-footer .sf-top{grid-template-columns:1fr;gap:18px;padding-block:22px 12px}}
